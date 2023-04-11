@@ -48,5 +48,8 @@
     "baldrick-zest-mess": "^0.17.0",
     "ts-node": "^10.9.1",
     "typescript": "^5.0.4"
+  },
+  "dependencies": {
+    "zod": "^3.21.4"
   }
 }
