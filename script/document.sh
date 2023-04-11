@@ -1,0 +1,1 @@
+npx baldrick-whisker@latest render doc/lunar-diamond-engraving.sequence.yaml github:flarebyte:baldrick-reserve:template/md/sequence.hbs doc/lunar-diamond-engraving-sequence.md
