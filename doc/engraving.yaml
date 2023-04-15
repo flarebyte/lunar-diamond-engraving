@@ -1,0 +1,31 @@
+---
+title: Engraving example
+engravings:
+  contact-address:
+    title: Write to address for contact
+    phases:
+      validation:
+        kind: async
+        title: Validate contact address
+        uses: route/contact-address      
+      actions:
+        store-contact: 
+          kind: async
+          title: Store contact to latest storage
+          uses: s3/contact-address
+        historical-store-contact:
+          kind: async
+          title: Store contact to historical storage
+          uses: s3/historical-contact-address
+        audit-journal:
+          kind: async
+          title: write to audit journal
+          uses: s3/audit-journal
+        action-search-record:
+          kind: async
+          title: write title and description to search database
+          uses: s3/contact-search
+      onFinish:
+          kind: async
+          title: Notify that the record has changed
+          uses: sns/contact-ready
