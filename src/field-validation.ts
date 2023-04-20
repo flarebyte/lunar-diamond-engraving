@@ -40,7 +40,8 @@ export const stringy = {
     .min(1)
     .max(300)
     .describe('The main reason why this section of script is needed'),
-  url: z.string().url().max(300).describe('A https link to a webpage'),
+  url: z.string().url().max(300).describe('A https link to the item resource'),
+  webpage: z.string().url().max(300).describe('A https link to a webpage'),
   path: z.string().max(300).describe('A relative path to a file'),
   propPath: z.string().max(300).describe('A dot prop path'),
 };

@@ -27,36 +27,56 @@ const actionsSchema = z.object({
   uses: stringy.uses,
 });
 
-const phasesSchema = z.object({
-  validation: z.object({
-    a: z
-      .enum(asEnumKeys(functionKindEmum))
+const phasesSchema = z
+  .object({
+    validation: z.object({
+      a: z
+        .enum(asEnumKeys(functionKindEmum))
+        .describe(
+          describeEnum('Kind of the validation function', functionKindEmum)
+        ),
+      title: stringy.title.describe('What is been validated'),
+      uses: stringy.uses,
+    }),
+    actions: z
+      .record(stringy.customKey, actionsSchema)
+      .describe('A list of actions to run'),
+    onFinish: z
+      .object({
+        a: z
+          .enum(asEnumKeys(functionKindEmum))
+          .describe(
+            describeEnum('Kind of the final function', functionKindEmum)
+          ),
+        title: stringy.title,
+        uses: stringy.uses,
+      })
       .describe(
-        describeEnum('Kind of the validation function', functionKindEmum)
+        'The final action that will be called when all other actions will have finished'
       ),
-    title: stringy.title,
-    uses: stringy.uses,
-  }),
-  actions: z.record(stringy.customKey, actionsSchema),
-  onFinish: z.object({
-    a: z
-      .enum(asEnumKeys(functionKindEmum))
-      .describe(describeEnum('Kind of the final function', functionKindEmum)),
-    title: stringy.title,
-    uses: stringy.uses,
-  }),
-});
+  })
+  .describe('Describe a phase of engraving for a specific domain');
 
-const engravingSchema = z.object({
-  title: stringy.title,
-  phases: phasesSchema,
-});
+const engravingSchema = z
+  .object({
+    title: stringy.title.describe('A concise title describing the domain'),
+    url: stringy.url.optional(),
+    phases: phasesSchema.describe(
+      'The different phases of engraving the domain'
+    ),
+  })
+  .describe('Domain for engraving (ex: student)')
+  .strict();
 
 export type Payload = z.infer<typeof schema>;
 export const schema = z
   .object({
     title: stringy.title,
-    engravings: z.record(stringy.customKey, engravingSchema),
+    webpage: stringy.webpage,
+    url: stringy.url.optional(),
+    engravings: z
+      .record(stringy.customKey, engravingSchema)
+      .describe('List of domain for engraving'),
   })
   .describe('Settings for a lunar-diamond-engraving file')
   .strict();
