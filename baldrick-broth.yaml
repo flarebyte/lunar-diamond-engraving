@@ -362,18 +362,27 @@ workflows:
             - name: report
               a: template
               title: Create a report
-              template: |
+              template: >
                 # Summary of the change
+
 
                 ## Code check
 
+
                 {{#if _.result-of-build}}- :heavy_check_mark:{{else}}- :heavy_exclamation_mark:{{/if}} Transpile to javascript
+
                 {{#if _.result-of-release-check}}- :heavy_check_mark:{{else}}- :heavy_exclamation_mark:{{/if}} The version has been incremented to "v{{build.model.project.version}}"
+
                 {{#if _.result-of-lint}}- :heavy_check_mark:{{else}}- :heavy_exclamation_mark:{{/if}} Static analysis and linting
+
                 {{#if _.result-of-markdown}}- :heavy_check_mark:{{else}}- :heavy_exclamation_mark:{{/if}} Markdown formatting
+
                 {{#if _.result-of-outdated}}- :heavy_check_mark:{{else}}- :heavy_exclamation_mark:{{/if}} No outdated NPM libraries
+
                 {{#if _.result-of-audit}}- :heavy_check_mark:{{else}}- :heavy_exclamation_mark:{{/if}} Security audit
+
                 {{#if _.result-of-pest}}- :heavy_check_mark:{{else}}- :heavy_exclamation_mark:{{/if}} Integration tests with baldrick-pest {{#unless _.should-run-pest}}(Not supported yet){{/unless}}
+
                 {{#if _.result-of-zest}}- :heavy_check_mark:{{else}}- :heavy_exclamation_mark:{{/if}} Unit tests with baldrick-zest {{#unless _.should-run-zest}}(Not supported yet){{/unless}}
             - name: write-report
               a: append-to-file
@@ -402,7 +411,9 @@ workflows:
               title: Title for the pull request
               description: A short title used for the pull request
               message: Short title describing the pull request
-            - run: gh pr create --title '{{_.category}}:{{_.title}}' --body-file temp/pull_request_relevant.md
+            - run:
+                gh pr create --title {{escapeSpace _.category}}:{{escapeSpace _.title}}
+                --body-file temp/pull_request_relevant.md
               title: Create the pull request
       publish:
         title: Publish the current library
@@ -455,12 +466,11 @@ workflows:
               title: Extract model from this baldrick-broth.yaml
               value: build
               mask: model
-            - title: Save baldrick-broth file with existing model
-              stdin: data.scaffold::upgrade::broth-model
-              run: sponge temp/broth/baldrick-broth-model.json
-              links:
-                - title: sponge from MoreUtils homepage
-                  url: https://formulae.brew.sh/formula/moreutils
+            - name: save-old-model
+              a: write-to-file
+              title: Save baldrick-broth file with existing model
+              value: data.broth-model
+              filename: temp/broth/baldrick-broth-model.json
             - title: merge model with new workflow
               run: npx baldrick-whisker@latest object baldrick-broth.yaml
                 temp/broth/baldrick-broth-model.json
@@ -602,10 +612,11 @@ workflows:
               name: package-json-deps
               value: data.package-json
               mask: dependencies,devDependencies,peerDependencies
-            - name: save-package-json-deps
+            - a: write-to-file
               title: Save package.json with only dependencies
-              stdin: data.package-json-deps
-              run: sponge temp/broth/package-deps.json
+              name: save-package-json-deps
+              value: data.package-json-deps
+              filename: temp/broth/package-deps.json
             - title: Create package.json metadata from broth model
               run: npx baldrick-whisker@latest render baldrick-broth.yaml
                 github:flarebyte:baldrick-reserve:template/ts/package.hbs
@@ -613,3 +624,13 @@ workflows:
             - title: merge dependencies with broth model info
               run: npx baldrick-whisker@latest object package.json
                 temp/broth/package-specific.json temp/broth/package-deps.json
+      custom:
+        title: Normalize using the custom script
+        description: Normalize the project using a custom script for this project
+        motivation:
+          Enable an imperative approach for some of normalisation to keep the
+          model simple
+        main:
+          commands:
+            - title: Normalize using the custom script
+              run: sh custom-scaffolding.sh
