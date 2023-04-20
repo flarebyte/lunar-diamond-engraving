@@ -1,0 +1,164 @@
+{
+  "$ref": "#/definitions/baldrick-pest-schema",
+  "definitions": {
+    "baldrick-pest-schema": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 60
+        },
+        "webpage": {
+          "type": "string",
+          "format": "uri",
+          "maxLength": 300,
+          "description": "A https link to a webpage"
+        },
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "maxLength": 300,
+          "description": "A https link to the item resource"
+        },
+        "engravings": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "title": {
+                "$ref": "#/definitions/baldrick-pest-schema/properties/title",
+                "description": "A concise title describing the domain"
+              },
+              "url": {
+                "$ref": "#/definitions/baldrick-pest-schema/properties/url",
+                "description": "A https link to the item resource"
+              },
+              "phases": {
+                "type": "object",
+                "properties": {
+                  "validation": {
+                    "type": "object",
+                    "properties": {
+                      "a": {
+                        "type": "string",
+                        "enum": [
+                          "async",
+                          "sync"
+                        ],
+                        "description": "Kind of the validation function with either:\nasync: This function returns a Promise and can be used with async/await syntax.\nsync: This function executes synchronously and returns its result immediately."
+                      },
+                      "title": {
+                        "$ref": "#/definitions/baldrick-pest-schema/properties/title",
+                        "description": "What is been validated"
+                      },
+                      "uses": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 60,
+                        "description": "A unique key representing a function"
+                      }
+                    },
+                    "required": [
+                      "a",
+                      "title",
+                      "uses"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "actions": {
+                    "type": "object",
+                    "additionalProperties": {
+                      "type": "object",
+                      "properties": {
+                        "a": {
+                          "type": "string",
+                          "enum": [
+                            "async",
+                            "sync"
+                          ],
+                          "description": "Kind of the action function with either:\nasync: This function returns a Promise and can be used with async/await syntax.\nsync: This function executes synchronously and returns its result immediately."
+                        },
+                        "title": {
+                          "$ref": "#/definitions/baldrick-pest-schema/properties/title"
+                        },
+                        "uses": {
+                          "$ref": "#/definitions/baldrick-pest-schema/properties/engravings/additionalProperties/properties/phases/properties/validation/properties/uses"
+                        }
+                      },
+                      "required": [
+                        "a",
+                        "title",
+                        "uses"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "propertyNames": {
+                      "minLength": 1,
+                      "maxLength": 60,
+                      "pattern": "[a-z][\\d_a-z]+"
+                    },
+                    "description": "A list of actions to run"
+                  },
+                  "onFinish": {
+                    "type": "object",
+                    "properties": {
+                      "a": {
+                        "type": "string",
+                        "enum": [
+                          "async",
+                          "sync"
+                        ],
+                        "description": "Kind of the final function with either:\nasync: This function returns a Promise and can be used with async/await syntax.\nsync: This function executes synchronously and returns its result immediately."
+                      },
+                      "title": {
+                        "$ref": "#/definitions/baldrick-pest-schema/properties/title"
+                      },
+                      "uses": {
+                        "$ref": "#/definitions/baldrick-pest-schema/properties/engravings/additionalProperties/properties/phases/properties/validation/properties/uses"
+                      }
+                    },
+                    "required": [
+                      "a",
+                      "title",
+                      "uses"
+                    ],
+                    "additionalProperties": false,
+                    "description": "The final action that will be called when all other actions will have finished"
+                  }
+                },
+                "required": [
+                  "validation",
+                  "actions",
+                  "onFinish"
+                ],
+                "additionalProperties": false,
+                "description": "The different phases of engraving the domain"
+              }
+            },
+            "required": [
+              "title",
+              "phases"
+            ],
+            "additionalProperties": false,
+            "description": "Domain for engraving (ex: student)"
+          },
+          "propertyNames": {
+            "minLength": 1,
+            "maxLength": 60,
+            "pattern": "[a-z][\\d_a-z]+"
+          },
+          "description": "List of domain for engraving"
+        }
+      },
+      "required": [
+        "title",
+        "webpage",
+        "engravings"
+      ],
+      "additionalProperties": false,
+      "description": "Settings for a lunar-diamond-engraving file"
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
