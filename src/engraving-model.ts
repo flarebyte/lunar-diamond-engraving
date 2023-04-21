@@ -81,11 +81,11 @@ export const schema = z
   .describe('Settings for a lunar-diamond-engraving file')
   .strict();
 
-export type BuildModel = z.infer<typeof schema>;
+export type EngravingModel = z.infer<typeof schema>;
 
-export type BuildModelValidation = Result<BuildModel, ValidationError[]>;
+export type EngravingModelValidation = Result<EngravingModel, ValidationError[]>;
 
-export const safeParseBuild = (content: unknown): BuildModelValidation => {
+export const safeParseBuild = (content: unknown): EngravingModelValidation => {
   const result = schema.safeParse(content);
   if (result.success) {
     return succeed(result.data);
