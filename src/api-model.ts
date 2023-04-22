@@ -11,45 +11,42 @@ interface EngravingInput {
   context: object;
 }
 
-type schemaId = 'opts' | 'headers' | 'parameters' | 'payload' | 'context';
+interface ActionError {
+  id: string;
+  engraving: string;
+  action: string;
+  metadata: { [key: string]: string };
+  messages: string[];
+}
+interface EngravingOnFinishInput {
+  input: EngravingInput;
+  actionErrors: ActionError[];
+}
 
-type EngravingError =
-  | {
-      id: string;
-      engraving: string;
-      phase: 'validation';
-      schemas: schemaId[];
-      metadata: { [key: string]: string };
-      messages: string[];
-    }
-  | {
-      id: string;
-      engraving: string;
-      phase: 'actions';
-      action: string;
-      metadata: { [key: string]: string };
-      messages: string[];
-    }
-  | {
-      id: string;
-      engraving: string;
-      phase: 'onFinish';
-      metadata: { [key: string]: string };
-      messages: string[];
-    }
-  | {
-      phase: '_internal';
-      metadata: { [key: string]: string };
-      messages: string[];
-    };
+interface OnFinishError {
+  id: string;
+  engraving: string;
+  metadata: { [key: string]: string };
+  messages: string[];
+}
 
-type EngravingFunctionResult = Result<EngravingInput, EngravingError>;
+type EngravingActionFunctionResult = Result<EngravingInput, ActionError>;
+type EngravingOnFinishFunctionResult = Result<
+  EngravingOnFinishInput,
+  OnFinishError
+>;
 
-type SyncEngravingFunction = () => EngravingFunctionResult;
-type AsyncEngravingFunction = () => Promise<EngravingFunctionResult>;
+type AsyncEngravingActionFunction = (
+  value: EngravingInput
+) => Promise<EngravingActionFunctionResult>;
+
+type AsyncEngravingOnFinishFunction = (
+  value: EngravingOnFinishInput
+) => Promise<EngravingOnFinishFunctionResult>;
 
 export interface LunarDiamondEngavingOpts {
   model: EngravingModel;
-  functions: { [name: string]: SyncEngravingFunction | AsyncEngravingFunction };
+  actionFunctions: { [name: string]: AsyncEngravingActionFunction };
+  onFinishFunctions: { [name: string]: AsyncEngravingOnFinishFunction };
   schemas: { [name: string]: z.AnyZodObject };
 }
