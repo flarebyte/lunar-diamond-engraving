@@ -36,7 +36,23 @@ const phasesSchema = z
           describeEnum('Kind of the validation function', functionKindEmum)
         ),
       title: stringy.title.describe('What is been validated'),
-      uses: stringy.uses,
+      schemas: z.object({
+        opts: stringy.schemaId.describe(
+          'Zod schema id for validating the options passed to processing'
+        ),
+        headers: stringy.schemaId.describe(
+          'Zod schema id for validating the HTTP headers'
+        ),
+        parameters: stringy.schemaId.describe(
+          'Zod schema id for validating the query parameters'
+        ),
+        payload: stringy.schemaId.describe(
+          'Zod schema id for validating the incoming payload'
+        ),
+        context: stringy.schemaId.describe(
+          'Zod schema id for validating context'
+        ),
+      }),
     }),
     actions: z
       .record(stringy.customKey, actionsSchema)
@@ -83,7 +99,10 @@ export const schema = z
 
 export type EngravingModel = z.infer<typeof schema>;
 
-export type EngravingModelValidation = Result<EngravingModel, ValidationError[]>;
+export type EngravingModelValidation = Result<
+  EngravingModel,
+  ValidationError[]
+>;
 
 export const safeParseBuild = (content: unknown): EngravingModelValidation => {
   const result = schema.safeParse(content);

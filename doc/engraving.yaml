@@ -7,9 +7,14 @@ engravings:
       validation:
         kind: async
         title: Validate contact address
-        uses: route/contact-address      
+        schemas:
+          opts: zod/contact/opts
+          headers: zod/contact/headers
+          parameter: zod/contact/parameter
+          payload: zod/contact/payload
+          context: zod/contact/context
       actions:
-        store-contact: 
+        store-contact:
           kind: async
           title: Store contact to latest storage
           uses: s3/contact-address

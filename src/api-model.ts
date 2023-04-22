@@ -1,3 +1,4 @@
+import { z } from 'zod';
 import { EngravingModel } from './engraving-model.js';
 import { Result } from './railway.js';
 
@@ -9,4 +10,5 @@ type AsyncEngravingFunction = () => Promise<EngravingFunctionResult>;
 export interface LunarDiamondEngavingOpts {
   model: EngravingModel;
   functions: { [name: string]: SyncEngravingFunction | AsyncEngravingFunction };
+  schemas: { [name: string]: z.AnyZodObject};
 }

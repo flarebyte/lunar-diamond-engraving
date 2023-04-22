@@ -28,6 +28,13 @@ export const stringy = {
     .max(60)
     .refine(isSingleLine, { message: 'title should be a single line' })
     .describe('A unique key representing a function'),
+  schemaId: z
+    .string()
+    .trim()
+    .min(1)
+    .max(60)
+    .refine(isSingleLine, { message: 'title should be a single line' })
+    .describe('A unique key representing a zod schema'),
   description: z
     .string()
     .trim()
