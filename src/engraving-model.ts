@@ -27,6 +27,17 @@ const actionsSchema = z.object({
   uses: stringy.uses,
 });
 
+const validation = z.object({
+  opts: stringy.schemaId.describe(
+    'Id for validating the options passed to processing'
+  ),
+  headers: stringy.schemaId.describe('Id for validating the HTTP headers'),
+  parameters: stringy.schemaId.describe(
+    'Id for validating the query parameters'
+  ),
+  payload: stringy.schemaId.describe('Id for validating the incoming payload'),
+  context: stringy.schemaId.describe('iId for validating context'),
+});
 const phasesSchema = z
   .object({
     validation: z.object({
@@ -36,23 +47,8 @@ const phasesSchema = z
           describeEnum('Kind of the validation function', functionKindEmum)
         ),
       title: stringy.title.describe('What is been validated'),
-      schemas: z.object({
-        opts: stringy.schemaId.describe(
-          'Zod schema id for validating the options passed to processing'
-        ),
-        headers: stringy.schemaId.describe(
-          'Zod schema id for validating the HTTP headers'
-        ),
-        parameters: stringy.schemaId.describe(
-          'Zod schema id for validating the query parameters'
-        ),
-        payload: stringy.schemaId.describe(
-          'Zod schema id for validating the incoming payload'
-        ),
-        context: stringy.schemaId.describe(
-          'Zod schema id for validating context'
-        ),
-      }),
+      check: validation.describe('Main validation that must be satisfied'),
+      shield: validation.describe('Secondary validation that may raise alarms'),
     }),
     actions: z
       .record(stringy.customKey, actionsSchema)

@@ -52,17 +52,77 @@
                         "$ref": "#/definitions/baldrick-pest-schema/properties/title",
                         "description": "What is been validated"
                       },
-                      "uses": {
-                        "type": "string",
-                        "minLength": 1,
-                        "maxLength": 60,
-                        "description": "A unique key representing a function"
+                      "check": {
+                        "type": "object",
+                        "properties": {
+                          "opts": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 60,
+                            "description": "Id for validating the options passed to processing"
+                          },
+                          "headers": {
+                            "$ref": "#/definitions/baldrick-pest-schema/properties/engravings/additionalProperties/properties/phases/properties/validation/properties/check/properties/opts",
+                            "description": "Id for validating the HTTP headers"
+                          },
+                          "parameters": {
+                            "$ref": "#/definitions/baldrick-pest-schema/properties/engravings/additionalProperties/properties/phases/properties/validation/properties/check/properties/opts",
+                            "description": "Id for validating the query parameters"
+                          },
+                          "payload": {
+                            "$ref": "#/definitions/baldrick-pest-schema/properties/engravings/additionalProperties/properties/phases/properties/validation/properties/check/properties/opts",
+                            "description": "Id for validating the incoming payload"
+                          },
+                          "context": {
+                            "$ref": "#/definitions/baldrick-pest-schema/properties/engravings/additionalProperties/properties/phases/properties/validation/properties/check/properties/opts",
+                            "description": "iId for validating context"
+                          }
+                        },
+                        "required": [
+                          "opts",
+                          "headers",
+                          "parameters",
+                          "payload",
+                          "context"
+                        ],
+                        "additionalProperties": false,
+                        "description": "Main validation that must be satisfied"
+                      },
+                      "shield": {
+                        "type": "object",
+                        "properties": {
+                          "opts": {
+                            "$ref": "#/definitions/baldrick-pest-schema/properties/engravings/additionalProperties/properties/phases/properties/validation/properties/check/properties/opts"
+                          },
+                          "headers": {
+                            "$ref": "#/definitions/baldrick-pest-schema/properties/engravings/additionalProperties/properties/phases/properties/validation/properties/check/properties/headers"
+                          },
+                          "parameters": {
+                            "$ref": "#/definitions/baldrick-pest-schema/properties/engravings/additionalProperties/properties/phases/properties/validation/properties/check/properties/parameters"
+                          },
+                          "payload": {
+                            "$ref": "#/definitions/baldrick-pest-schema/properties/engravings/additionalProperties/properties/phases/properties/validation/properties/check/properties/payload"
+                          },
+                          "context": {
+                            "$ref": "#/definitions/baldrick-pest-schema/properties/engravings/additionalProperties/properties/phases/properties/validation/properties/check/properties/context"
+                          }
+                        },
+                        "required": [
+                          "opts",
+                          "headers",
+                          "parameters",
+                          "payload",
+                          "context"
+                        ],
+                        "additionalProperties": false,
+                        "description": "Secondary validation that may raise alarms"
                       }
                     },
                     "required": [
                       "a",
                       "title",
-                      "uses"
+                      "check",
+                      "shield"
                     ],
                     "additionalProperties": false
                   },
@@ -83,7 +143,10 @@
                           "$ref": "#/definitions/baldrick-pest-schema/properties/title"
                         },
                         "uses": {
-                          "$ref": "#/definitions/baldrick-pest-schema/properties/engravings/additionalProperties/properties/phases/properties/validation/properties/uses"
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 60,
+                          "description": "A unique key representing a function"
                         }
                       },
                       "required": [
@@ -115,7 +178,7 @@
                         "$ref": "#/definitions/baldrick-pest-schema/properties/title"
                       },
                       "uses": {
-                        "$ref": "#/definitions/baldrick-pest-schema/properties/engravings/additionalProperties/properties/phases/properties/validation/properties/uses"
+                        "$ref": "#/definitions/baldrick-pest-schema/properties/engravings/additionalProperties/properties/phases/properties/actions/additionalProperties/properties/uses"
                       }
                     },
                     "required": [

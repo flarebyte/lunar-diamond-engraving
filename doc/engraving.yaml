@@ -7,12 +7,15 @@ engravings:
       validation:
         kind: async
         title: Validate contact address
-        schemas:
+        check:
           opts: zod/contact/opts
           headers: zod/contact/headers
           parameter: zod/contact/parameter
           payload: zod/contact/payload
           context: zod/contact/context
+        shield:
+          opts: zod/contact/opts
+          headers: zod/contact/headers
       actions:
         store-contact:
           kind: async
