@@ -10,16 +10,19 @@ interface EngravingInput {
   context: object;
 }
 
-interface EngravingValidationInput {
+interface EngravingValidationOpts {
   target: 'opts' | 'headers' | 'parameters' | 'payload' | 'context';
   object: object;
   engravingInput: EngravingInput;
 }
 
+interface IdentifierGeneratorOpts {
+  metadata: { [key: string]: string };
+}
 interface ValidationError {
   id: string;
   engraving: string;
-  action: string;
+  target: 'opts' | 'headers' | 'parameters' | 'payload' | 'context';
   metadata: { [key: string]: string };
   messages: string[];
 }
@@ -44,7 +47,7 @@ interface OnFinishError {
 }
 
 type EngravingValidationFunctionResult = Result<
-  EngravingValidationInput,
+  EngravingValidationOpts,
   ValidationError
 >;
 type EngravingActionFunctionResult = Result<EngravingInput, ActionError>;
@@ -54,8 +57,12 @@ type EngravingOnFinishFunctionResult = Result<
 >;
 
 type EngravingValidationFunction = (
-  value: EngravingValidationInput
+  value: EngravingValidationOpts
 ) => EngravingValidationFunctionResult;
+
+type AsyncIdentifierGeneratorFunction = (
+  value: IdentifierGeneratorOpts
+) => Promise<string>;
 
 type AsyncEngravingActionFunction = (
   value: EngravingInput
@@ -69,5 +76,7 @@ export interface LunarDiamondEngavingOpts {
   model: EngravingModel;
   actionFunctions: { [name: string]: AsyncEngravingActionFunction };
   onFinishFunctions: { [name: string]: AsyncEngravingOnFinishFunction };
-  schemas: { [name: string]: EngravingValidationFunction };
+  validationFunctions: { [name: string]: EngravingValidationFunction };
+  shieldFunctions: { [name: string]: EngravingValidationFunction };
+  idGeneratorFunctions: { [name: string]: AsyncIdentifierGeneratorFunction };
 }
