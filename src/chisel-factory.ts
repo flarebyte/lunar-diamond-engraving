@@ -1,90 +1,114 @@
-import { AsyncEngravingActionFunction, AsyncEngravingOnFinishFunction, AsyncIdentifierGeneratorFunction, EngravingAlerterFunction, EngravingChisel, EngravingLoggerFunction, EngravingValidationFunction } from "./api-model.js";
-import { EngravingModel } from "./engraving-model.js";
+import {
+  AsyncEngravingActionFunction,
+  AsyncEngravingOnFinishFunction,
+  AsyncIdentifierGeneratorFunction,
+  EngravingAlerterFunction,
+  EngravingChisel,
+  EngravingLoggerFunction,
+  EngravingValidationFunction,
+} from './api-model.js';
+import { EngravingModel, safeParseBuild } from './engraving-model.js';
 
-
+/**
+ * Builder for Engraving Chisel
+ */
 export class EngravingChiselBuilder {
-    private _model!: EngravingModel;
-    private _actionFunctions!: { [name: string]: AsyncEngravingActionFunction };
-    private _onFinishFunctions!: { [name: string]: AsyncEngravingOnFinishFunction };
-    private _validationFunctions!: { [name: string]: EngravingValidationFunction };
-    private _shieldFunctions!: { [name: string]: EngravingValidationFunction };
-    private _idGeneratorFunctions!: { [name: string]: AsyncIdentifierGeneratorFunction };
-    private _loggerFunctions!: { [name: string]: EngravingLoggerFunction };
-    private _alerterFunctions!: { [name: string]: EngravingAlerterFunction };
-  
-    public setModel(model: EngravingModel): this {
-      this._model = model;
-      return this;
-    }
-  
-    public setActionFunctions(actionFunctions: {
-      [name: string]: AsyncEngravingActionFunction;
-    }): this {
-      this._actionFunctions = actionFunctions;
-      return this;
-    }
-  
-    public setOnFinishFunctions(onFinishFunctions: {
-      [name: string]: AsyncEngravingOnFinishFunction;
-    }): this {
-      this._onFinishFunctions = onFinishFunctions;
-      return this;
-    }
-  
-    public setValidationFunctions(validationFunctions: {
-      [name: string]: EngravingValidationFunction;
-    }): this {
-      this._validationFunctions = validationFunctions;
-      return this;
-    }
-  
-    public setShieldFunctions(shieldFunctions: {
-      [name: string]: EngravingValidationFunction;
-    }): this {
-      this._shieldFunctions = shieldFunctions;
-      return this;
-    }
-  
-    public setIdGeneratorFunctions(idGeneratorFunctions: {
-      [name: string]: AsyncIdentifierGeneratorFunction;
-    }): this {
-      this._idGeneratorFunctions = idGeneratorFunctions;
-      return this;
-    }
-  
-    public setLoggerFunctions(loggerFunctions: {
-      [name: string]: EngravingLoggerFunction;
-    }): this {
-      this._loggerFunctions = loggerFunctions;
-      return this;
-    }
-  
-    public setAlerterFunctions(alerterFunctions: {
-      [name: string]: EngravingAlerterFunction;
-    }): this {
-      this._alerterFunctions = alerterFunctions;
-      return this;
-    }
-  
-    public build(): EngravingChisel {
-      if (!this._model) throw new Error("Model is required");
-      if (!this._actionFunctions) throw new Error("Action functions are required");
-      if (!this._onFinishFunctions) throw new Error("On finish functions are required");
-      if (!this._validationFunctions) throw new Error("Validation functions are required");
-      if (!this._shieldFunctions) throw new Error("Shield functions are required");
-      if (!this._idGeneratorFunctions) throw new Error("ID generator functions are required");
-      if (!this._loggerFunctions) throw new Error("Logger functions are required");
-      if (!this._alerterFunctions) throw new Error("Alerter functions are required");
-  
-      return {
-        model: this._model,
-        actionFunctions: this._actionFunctions,
-        onFinishFunctions: this._onFinishFunctions,
-        validationFunctions: this._validationFunctions,
-        shieldFunctions: this._shieldFunctions,
-        idGeneratorFunctions: this._idGeneratorFunctions,
-        loggerFunctions: this._loggerFunctions,
-        alerterFunctions: this._alerterFunctions,
-      };
+  private model?: EngravingModel;
+  private actionFunctions: { [name: string]: AsyncEngravingActionFunction } =
+    {};
+  private onFinishFunctions: {
+    [name: string]: AsyncEngravingOnFinishFunction;
+  } = {};
+  private validationFunctions: { [name: string]: EngravingValidationFunction } =
+    {};
+  private shieldFunctions: { [name: string]: EngravingValidationFunction } = {};
+  private idGeneratorFunctions: {
+    [name: string]: AsyncIdentifierGeneratorFunction;
+  } = {};
+  private loggerFunctions: { [name: string]: EngravingLoggerFunction } = {};
+  private alerterFunctions: { [name: string]: EngravingAlerterFunction } = {};
+
+  public setModel(model: EngravingModel): this {
+    this.model = model;
+    return this;
+  }
+
+  public parseModel(model: object): this {
+    const modelResult = safeParseBuild(model);
+    if (modelResult.status === 'success') {
+      return this.setModel(modelResult.value);
+    } else {
+      throw new Error(`${modelResult.error}`);
     }
   }
+
+  public addActionFunction(
+    name: string,
+    actionFunction: AsyncEngravingActionFunction
+  ): this {
+    this.actionFunctions[name] = actionFunction;
+    return this;
+  }
+
+  public addOnFinishFunction(
+    name: string,
+    onFinishFunction: AsyncEngravingOnFinishFunction
+  ): this {
+    this.onFinishFunctions[name] = onFinishFunction;
+    return this;
+  }
+
+  public addValidationFunction(
+    name: string,
+    validationFunction: EngravingValidationFunction
+  ): this {
+    this.validationFunctions[name] = validationFunction;
+    return this;
+  }
+
+  public addShieldFunction(
+    name: string,
+    shieldFunction: EngravingValidationFunction
+  ): this {
+    this.shieldFunctions[name] = shieldFunction;
+    return this;
+  }
+
+  public addIdGeneratorFunction(
+    name: string,
+    idGeneratorFunction: AsyncIdentifierGeneratorFunction
+  ): this {
+    this.idGeneratorFunctions[name] = idGeneratorFunction;
+    return this;
+  }
+
+  public addLoggerFunction(
+    name: string,
+    loggerFunction: EngravingLoggerFunction
+  ): this {
+    this.loggerFunctions[name] = loggerFunction;
+    return this;
+  }
+
+  public addAlerterFunction(
+    name: string,
+    alerterFunction: EngravingAlerterFunction
+  ): this {
+    this.alerterFunctions[name] = alerterFunction;
+    return this;
+  }
+
+  public build(): EngravingChisel {
+    if (this.model === undefined) throw new Error('Model is required');
+    return {
+      model: this.model,
+      actionFunctions: this.actionFunctions,
+      onFinishFunctions: this.onFinishFunctions,
+      validationFunctions: this.validationFunctions,
+      shieldFunctions: this.shieldFunctions,
+      idGeneratorFunctions: this.idGeneratorFunctions,
+      loggerFunctions: this.loggerFunctions,
+      alerterFunctions: this.alerterFunctions,
+    };
+  }
+}
