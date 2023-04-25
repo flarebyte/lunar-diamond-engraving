@@ -1,8 +1,10 @@
 import { EngravingModel } from './engraving-model.js';
 import { Result } from './railway.js';
 
-interface EngravingInput {
+/** The incoming input to write */
+export interface EngravingInput {
   name: string;
+  txId: string;
   opts: object;
   headers: object;
   parameters: object;
@@ -10,36 +12,51 @@ interface EngravingInput {
   context: object;
 }
 
-interface EngravingValidationOpts {
+export interface EngravingValidationOpts {
   target: 'opts' | 'headers' | 'parameters' | 'payload' | 'context';
   object: object;
   engravingInput: EngravingInput;
 }
 
-interface IdentifierGeneratorOpts {
+export interface LoggerOpts {
+  engravingInput: EngravingInput;
+  level: 'info' | 'warn' | 'error';
   metadata: { [key: string]: string };
 }
-interface ValidationError {
+
+export interface AlerterOpts {
+  engravingInput: EngravingInput;
+  metadata: { [key: string]: string };
+}
+
+export interface IdentifierGeneratorOpts {
+  metadata: { [key: string]: string };
+}
+
+export interface ValidationError {
   id: string;
+  txId: string;
   engraving: string;
   target: 'opts' | 'headers' | 'parameters' | 'payload' | 'context';
   metadata: { [key: string]: string };
   messages: string[];
 }
 
-interface ActionError {
+export interface ActionError {
   id: string;
+  txId: string;
   engraving: string;
   action: string;
   metadata: { [key: string]: string };
   messages: string[];
 }
-interface EngravingOnFinishInput {
+
+export interface EngravingOnFinishopts {
   input: EngravingInput;
   actionErrors: ActionError[];
 }
 
-interface OnFinishError {
+export interface OnFinishError {
   id: string;
   engraving: string;
   metadata: { [key: string]: string };
@@ -52,25 +69,28 @@ type EngravingValidationFunctionResult = Result<
 >;
 type EngravingActionFunctionResult = Result<EngravingInput, ActionError>;
 type EngravingOnFinishFunctionResult = Result<
-  EngravingOnFinishInput,
+  EngravingOnFinishopts,
   OnFinishError
 >;
 
-type EngravingValidationFunction = (
+export type EngravingValidationFunction = (
   value: EngravingValidationOpts
 ) => EngravingValidationFunctionResult;
 
-type AsyncIdentifierGeneratorFunction = (
+export type AsyncIdentifierGeneratorFunction = (
   value: IdentifierGeneratorOpts
 ) => Promise<string>;
 
-type AsyncEngravingActionFunction = (
+export type AsyncEngravingActionFunction = (
   value: EngravingInput
 ) => Promise<EngravingActionFunctionResult>;
 
-type AsyncEngravingOnFinishFunction = (
-  value: EngravingOnFinishInput
+export type AsyncEngravingOnFinishFunction = (
+  value: EngravingOnFinishopts
 ) => Promise<EngravingOnFinishFunctionResult>;
+
+export type EngravingLoggerFunction = (opts: LoggerOpts) => void;
+export type EngravingAlerterFunction = (opts: AlerterOpts) => void;
 
 export interface LunarDiamondEngavingOpts {
   model: EngravingModel;
@@ -79,4 +99,6 @@ export interface LunarDiamondEngavingOpts {
   validationFunctions: { [name: string]: EngravingValidationFunction };
   shieldFunctions: { [name: string]: EngravingValidationFunction };
   idGeneratorFunctions: { [name: string]: AsyncIdentifierGeneratorFunction };
+  loggerFunctions: { [name: string]: EngravingLoggerFunction };
+  alerterFunctions: { [name: string]: EngravingAlerterFunction };
 }

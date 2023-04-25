@@ -3,10 +3,18 @@ title: Engraving example
 engravings:
   contact-address:
     title: Write to address for contact
+    generator: id/action/uuid
+    logger: logger/action
+    alerter: alerter/action
     phases:
       validation:
         kind: async
         title: Validate contact address
+        logger: logger/validation
+        alerter: alerter/validation
+        generator:
+          check: id/check/uuid
+          shield: id/shield/uuid
         check:
           opts: zod/contact/opts
           headers: zod/contact/headers
@@ -14,13 +22,19 @@ engravings:
           payload: zod/contact/payload
           context: zod/contact/context
         shield:
-          opts: zod/contact/opts
-          headers: zod/contact/headers
+          opts: zod/shield/contact/opts
+          headers: zod/shield/contact/headers
+          parameter: zod/shield/contact/parameter
+          payload: zod/cshield/ontact/payload
+          context: zod/shield/contact/context
       actions:
         store-contact:
           kind: async
           title: Store contact to latest storage
           uses: s3/contact-address
+          generator: id/action/uuid
+          logger: logger/action
+          alerter: alerter/action
         historical-store-contact:
           kind: async
           title: Store contact to historical storage
@@ -34,6 +48,6 @@ engravings:
           title: write title and description to search database
           uses: s3/contact-search
       onFinish:
-          kind: async
-          title: Notify that the record has changed
-          uses: sns/contact-ready
+        kind: async
+        title: Notify that the record has changed
+        uses: sns/contact-ready
