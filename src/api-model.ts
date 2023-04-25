@@ -2,7 +2,7 @@ import { EngravingModel } from './engraving-model.js';
 import { Result } from './railway.js';
 
 /** The incoming input to write */
-export interface EngravingInput {
+export interface EngravingMask {
   name: string;
   txId: string;
   opts: object;
@@ -15,17 +15,17 @@ export interface EngravingInput {
 export interface EngravingValidationOpts {
   target: 'opts' | 'headers' | 'parameters' | 'payload' | 'context';
   object: object;
-  engravingInput: EngravingInput;
+  engravingInput: EngravingMask;
 }
 
 export interface LoggerOpts {
-  engravingInput: EngravingInput;
+  engravingInput: EngravingMask;
   level: 'info' | 'warn' | 'error';
   metadata: { [key: string]: string };
 }
 
 export interface AlerterOpts {
-  engravingInput: EngravingInput;
+  engravingInput: EngravingMask;
   metadata: { [key: string]: string };
 }
 
@@ -52,7 +52,7 @@ export interface ActionError {
 }
 
 export interface EngravingOnFinishopts {
-  input: EngravingInput;
+  input: EngravingMask;
   actionErrors: ActionError[];
 }
 
@@ -67,7 +67,7 @@ type EngravingValidationFunctionResult = Result<
   EngravingValidationOpts,
   ValidationError
 >;
-type EngravingActionFunctionResult = Result<EngravingInput, ActionError>;
+type EngravingActionFunctionResult = Result<EngravingMask, ActionError>;
 type EngravingOnFinishFunctionResult = Result<
   EngravingOnFinishopts,
   OnFinishError
@@ -82,7 +82,7 @@ export type AsyncIdentifierGeneratorFunction = (
 ) => Promise<string>;
 
 export type AsyncEngravingActionFunction = (
-  value: EngravingInput
+  value: EngravingMask
 ) => Promise<EngravingActionFunctionResult>;
 
 export type AsyncEngravingOnFinishFunction = (
@@ -92,7 +92,7 @@ export type AsyncEngravingOnFinishFunction = (
 export type EngravingLoggerFunction = (opts: LoggerOpts) => void;
 export type EngravingAlerterFunction = (opts: AlerterOpts) => void;
 
-export interface LunarDiamondEngavingOpts {
+export interface EngravingChisel {
   model: EngravingModel;
   actionFunctions: { [name: string]: AsyncEngravingActionFunction };
   onFinishFunctions: { [name: string]: AsyncEngravingOnFinishFunction };
