@@ -9,6 +9,32 @@ import {
 } from './api-model.js';
 import { EngravingModel, safeParseBuild } from './engraving-model.js';
 
+type RefCategory =
+  | 'action'
+  | 'onFinish'
+  | 'validation'
+  | 'shield'
+  | 'id-generator'
+  | 'logger'
+  | 'alerter';
+
+interface KeyReference {
+  name: string;
+  category: RefCategory;
+}
+
+interface ReferenceCheck {
+  unused: KeyReference[];
+  used: KeyReference[];
+  missing: KeyReference[];
+  supported: KeyReference[];
+}
+
+const createKeyReferenceList = (
+  mapping: { [name: string]: any },
+  category: RefCategory
+): KeyReference[] => Object.keys(mapping).map((name) => ({ name, category }));
+
 /**
  * Builder for Engraving Chisel
  */
@@ -110,5 +136,18 @@ export class EngravingChiselBuilder {
       loggerFunctions: this.loggerFunctions,
       alerterFunctions: this.alerterFunctions,
     };
+  }
+
+  public checkReferences(): ReferenceCheck {
+    const supported: KeyReference[] = [
+      ...createKeyReferenceList(this.actionFunctions, 'action'),
+      ...createKeyReferenceList(this.onFinishFunctions, 'onFinish'),
+      ...createKeyReferenceList(this.validationFunctions, 'validation'),
+      ...createKeyReferenceList(this.shieldFunctions, 'shield'),
+      ...createKeyReferenceList(this.idGeneratorFunctions, 'id-generator'),
+      ...createKeyReferenceList(this.loggerFunctions, 'logger'),
+      ...createKeyReferenceList(this.alerterFunctions, 'alerter'),
+    ];
+    
   }
 }

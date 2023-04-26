@@ -6,4 +6,8 @@ export const runEngraving = async ({
 }: {
   mask: EngravingMask;
   chisel: EngravingChisel;
-}) => {};
+}) => {
+  const engraving = chisel.model.engravings[mask.name]
+  
+
+};
