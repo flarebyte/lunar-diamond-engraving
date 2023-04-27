@@ -28,6 +28,27 @@ export const stringy = {
     .max(60)
     .refine(isSingleLine, { message: 'title should be a single line' })
     .describe('A unique key representing a function'),
+  logger: z
+    .string()
+    .trim()
+    .min(1)
+    .max(60)
+    .refine(isSingleLine, { message: 'title should be a single line' })
+    .describe('A unique key representing a logger'),
+  alerter: z
+    .string()
+    .trim()
+    .min(1)
+    .max(60)
+    .refine(isSingleLine, { message: 'title should be a single line' })
+    .describe('A unique key representing an alerter'),
+  generator: z
+    .string()
+    .trim()
+    .min(1)
+    .max(60)
+    .refine(isSingleLine, { message: 'title should be a single line' })
+    .describe('A unique key representing a generator'),
   schemaId: z
     .string()
     .trim()

@@ -34,20 +34,30 @@
                 "$ref": "#/definitions/baldrick-pest-schema/properties/url",
                 "description": "A https link to the item resource"
               },
+              "logger": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 60,
+                "description": "A unique key representing a logger"
+              },
+              "alerter": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 60,
+                "description": "A unique key representing an alerter"
+              },
+              "generator": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 60,
+                "description": "A unique key representing a generator"
+              },
               "phases": {
                 "type": "object",
                 "properties": {
                   "validation": {
                     "type": "object",
                     "properties": {
-                      "a": {
-                        "type": "string",
-                        "enum": [
-                          "async",
-                          "sync"
-                        ],
-                        "description": "Kind of the validation function with either:\nasync: This function returns a Promise and can be used with async/await syntax.\nsync: This function executes synchronously and returns its result immediately."
-                      },
                       "title": {
                         "$ref": "#/definitions/baldrick-pest-schema/properties/title",
                         "description": "What is been validated"
@@ -88,7 +98,33 @@
                         "additionalProperties": false,
                         "description": "Main validation that must be satisfied"
                       },
-                      "shield": {
+                      "logger": {
+                        "$ref": "#/definitions/baldrick-pest-schema/properties/engravings/additionalProperties/properties/logger",
+                        "description": "A unique key representing a logger"
+                      },
+                      "alerter": {
+                        "$ref": "#/definitions/baldrick-pest-schema/properties/engravings/additionalProperties/properties/alerter",
+                        "description": "A unique key representing an alerter"
+                      },
+                      "generator": {
+                        "$ref": "#/definitions/baldrick-pest-schema/properties/engravings/additionalProperties/properties/generator",
+                        "description": "A unique key representing a generator"
+                      }
+                    },
+                    "required": [
+                      "title",
+                      "check"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "shield": {
+                    "type": "object",
+                    "properties": {
+                      "title": {
+                        "$ref": "#/definitions/baldrick-pest-schema/properties/title",
+                        "description": "What is been validated"
+                      },
+                      "check": {
                         "type": "object",
                         "properties": {
                           "opts": {
@@ -115,14 +151,24 @@
                           "context"
                         ],
                         "additionalProperties": false,
-                        "description": "Secondary validation that may raise alarms"
+                        "description": "Main validation that must be satisfied"
+                      },
+                      "logger": {
+                        "$ref": "#/definitions/baldrick-pest-schema/properties/engravings/additionalProperties/properties/logger",
+                        "description": "A unique key representing a logger"
+                      },
+                      "alerter": {
+                        "$ref": "#/definitions/baldrick-pest-schema/properties/engravings/additionalProperties/properties/alerter",
+                        "description": "A unique key representing an alerter"
+                      },
+                      "generator": {
+                        "$ref": "#/definitions/baldrick-pest-schema/properties/engravings/additionalProperties/properties/generator",
+                        "description": "A unique key representing a generator"
                       }
                     },
                     "required": [
-                      "a",
                       "title",
-                      "check",
-                      "shield"
+                      "check"
                     ],
                     "additionalProperties": false
                   },
@@ -131,16 +177,20 @@
                     "additionalProperties": {
                       "type": "object",
                       "properties": {
-                        "a": {
-                          "type": "string",
-                          "enum": [
-                            "async",
-                            "sync"
-                          ],
-                          "description": "Kind of the action function with either:\nasync: This function returns a Promise and can be used with async/await syntax.\nsync: This function executes synchronously and returns its result immediately."
-                        },
                         "title": {
                           "$ref": "#/definitions/baldrick-pest-schema/properties/title"
+                        },
+                        "logger": {
+                          "$ref": "#/definitions/baldrick-pest-schema/properties/engravings/additionalProperties/properties/logger",
+                          "description": "A unique key representing a logger"
+                        },
+                        "alerter": {
+                          "$ref": "#/definitions/baldrick-pest-schema/properties/engravings/additionalProperties/properties/alerter",
+                          "description": "A unique key representing an alerter"
+                        },
+                        "generator": {
+                          "$ref": "#/definitions/baldrick-pest-schema/properties/engravings/additionalProperties/properties/generator",
+                          "description": "A unique key representing a generator"
                         },
                         "uses": {
                           "type": "string",
@@ -150,7 +200,6 @@
                         }
                       },
                       "required": [
-                        "a",
                         "title",
                         "uses"
                       ],
@@ -166,14 +215,6 @@
                   "onFinish": {
                     "type": "object",
                     "properties": {
-                      "a": {
-                        "type": "string",
-                        "enum": [
-                          "async",
-                          "sync"
-                        ],
-                        "description": "Kind of the final function with either:\nasync: This function returns a Promise and can be used with async/await syntax.\nsync: This function executes synchronously and returns its result immediately."
-                      },
                       "title": {
                         "$ref": "#/definitions/baldrick-pest-schema/properties/title"
                       },
@@ -182,7 +223,6 @@
                       }
                     },
                     "required": [
-                      "a",
                       "title",
                       "uses"
                     ],
@@ -192,6 +232,7 @@
                 },
                 "required": [
                   "validation",
+                  "shield",
                   "actions",
                   "onFinish"
                 ],
@@ -201,6 +242,9 @@
             },
             "required": [
               "title",
+              "logger",
+              "alerter",
+              "generator",
               "phases"
             ],
             "additionalProperties": false,

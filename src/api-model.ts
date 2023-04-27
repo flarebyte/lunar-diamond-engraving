@@ -73,9 +73,9 @@ type EngravingOnFinishFunctionResult = Result<
   OnFinishError
 >;
 
-export type EngravingValidationFunction = (
+export type AsyncEngravingValidationFunction = (
   value: EngravingValidationOpts
-) => EngravingValidationFunctionResult;
+) => Promise<EngravingValidationFunctionResult>;
 
 export type AsyncIdentifierGeneratorFunction = (
   value: IdentifierGeneratorOpts
@@ -90,15 +90,15 @@ export type AsyncEngravingOnFinishFunction = (
 ) => Promise<EngravingOnFinishFunctionResult>;
 
 export type EngravingLoggerFunction = (opts: LoggerOpts) => void;
-export type EngravingAlerterFunction = (opts: AlerterOpts) => void;
+export type AsyncEngravingAlerterFunction = (opts: AlerterOpts) => Promise<void>;
 
 export interface EngravingChisel {
   model: EngravingModel;
   actionFunctions: { [name: string]: AsyncEngravingActionFunction };
   onFinishFunctions: { [name: string]: AsyncEngravingOnFinishFunction };
-  validationFunctions: { [name: string]: EngravingValidationFunction };
-  shieldFunctions: { [name: string]: EngravingValidationFunction };
+  validationFunctions: { [name: string]: AsyncEngravingValidationFunction };
+  shieldFunctions: { [name: string]: AsyncEngravingValidationFunction };
   idGeneratorFunctions: { [name: string]: AsyncIdentifierGeneratorFunction };
   loggerFunctions: { [name: string]: EngravingLoggerFunction };
-  alerterFunctions: { [name: string]: EngravingAlerterFunction };
+  alerterFunctions: { [name: string]: AsyncEngravingAlerterFunction };
 }

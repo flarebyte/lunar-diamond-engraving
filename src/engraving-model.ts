@@ -3,27 +3,11 @@ import { stringy } from './field-validation.js';
 import { formatMessage, type ValidationError } from './format-message.js';
 import { type Result, succeed, willFail } from './railway.js';
 
-const describeEnum = (intro: string, objectValue: { [k: string]: string }) => {
-  const description = [`${intro} with either:`];
-  for (const [name, title] of Object.entries(objectValue)) {
-    description.push(`${name}: ${title}`);
-  }
-  return description.join('\n');
-};
-
-const asEnumKeys = (value: {}) => Object.keys(value) as [string, ...string[]];
-
-const functionKindEmum = {
-  async:
-    'This function returns a Promise and can be used with async/await syntax.',
-  sync: 'This function executes synchronously and returns its result immediately.',
-};
-
 const actionsSchema = z.object({
-  a: z
-    .enum(asEnumKeys(functionKindEmum))
-    .describe(describeEnum('Kind of the action function', functionKindEmum)),
   title: stringy.title,
+  logger: stringy.logger.optional(),
+  alerter: stringy.alerter.optional(),
+  generator: stringy.generator.optional(),
   uses: stringy.uses,
 });
 
@@ -41,25 +25,24 @@ const validation = z.object({
 const phasesSchema = z
   .object({
     validation: z.object({
-      a: z
-        .enum(asEnumKeys(functionKindEmum))
-        .describe(
-          describeEnum('Kind of the validation function', functionKindEmum)
-        ),
       title: stringy.title.describe('What is been validated'),
       check: validation.describe('Main validation that must be satisfied'),
-      shield: validation.describe('Secondary validation that may raise alarms'),
+      logger: stringy.logger.optional(),
+      alerter: stringy.alerter.optional(),
+      generator: stringy.generator.optional(),
+    }),
+    shield: z.object({
+      title: stringy.title.describe('What is been validated'),
+      check: validation.describe('Main validation that must be satisfied'),
+      logger: stringy.logger.optional(),
+      alerter: stringy.alerter.optional(),
+      generator: stringy.generator.optional(),
     }),
     actions: z
       .record(stringy.customKey, actionsSchema)
       .describe('A list of actions to run'),
     onFinish: z
       .object({
-        a: z
-          .enum(asEnumKeys(functionKindEmum))
-          .describe(
-            describeEnum('Kind of the final function', functionKindEmum)
-          ),
         title: stringy.title,
         uses: stringy.uses,
       })
@@ -73,6 +56,9 @@ const engravingSchema = z
   .object({
     title: stringy.title.describe('A concise title describing the domain'),
     url: stringy.url.optional(),
+    logger: stringy.logger,
+    alerter: stringy.alerter,
+    generator: stringy.generator,
     phases: phasesSchema.describe(
       'The different phases of engraving the domain'
     ),
