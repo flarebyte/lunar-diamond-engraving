@@ -1,7 +1,7 @@
 import {
   AsyncEngravingActionFunction,
   AsyncEngravingOnFinishFunction,
-  AsyncIdentifierGeneratorFunction,
+  AsyncEngravingGeneratorFunction,
   AsyncEngravingAlerterFunction,
   EngravingChisel,
   EngravingLoggerFunction,
@@ -63,7 +63,7 @@ export class EngravingChiselBuilder {
     [name: string]: AsyncEngravingValidationFunction;
   } = {};
   private idGeneratorFunctions: {
-    [name: string]: AsyncIdentifierGeneratorFunction;
+    [name: string]: AsyncEngravingGeneratorFunction;
   } = {};
   private loggerFunctions: { [name: string]: EngravingLoggerFunction } = {};
   private alerterFunctions: { [name: string]: AsyncEngravingAlerterFunction } =
@@ -120,7 +120,7 @@ export class EngravingChiselBuilder {
 
   public addIdGeneratorFunction(
     name: string,
-    idGeneratorFunction: AsyncIdentifierGeneratorFunction
+    idGeneratorFunction: AsyncEngravingGeneratorFunction
   ): this {
     this.idGeneratorFunctions[name] = idGeneratorFunction;
     return this;

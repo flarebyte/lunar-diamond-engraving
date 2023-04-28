@@ -38,6 +38,14 @@ export const stringy = {
     .startsWith('work:')
     .refine(isSingleLine, { message: 'title should be a single line' })
     .describe('A unique key representing a function'),
+  finishId: z
+    .string()
+    .trim()
+    .min(1)
+    .max(60)
+    .startsWith('finish:')
+    .refine(isSingleLine, { message: 'title should be a single line' })
+    .describe('A unique key representing a finish function'),
   logger: z
     .string()
     .trim()

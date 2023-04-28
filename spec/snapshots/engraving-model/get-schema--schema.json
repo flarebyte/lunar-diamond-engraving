@@ -262,7 +262,11 @@
                         "description": "A unique key representing a generator"
                       },
                       "uses": {
-                        "$ref": "#/definitions/baldrick-pest-schema/properties/engravings/additionalProperties/properties/phases/properties/actions/additionalProperties/properties/uses"
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 60,
+                        "pattern": "^finish\\:",
+                        "description": "A unique key representing a finish function"
                       }
                     },
                     "required": [

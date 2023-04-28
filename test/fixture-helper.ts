@@ -1,5 +1,19 @@
 import { EngravingChiselBuilder } from '../src/chisel-factory.js';
-import { EngravingModel } from '../src/index.mjs';
+import {
+  AlerterOpts,
+  AsyncEngravingActionFunction,
+  AsyncEngravingAlerterFunction,
+  AsyncEngravingValidationFunction,
+  AsyncEngravingGeneratorFunction,
+  EngravingLoggerFunction,
+  EngravingMask,
+  EngravingModel,
+  EngravingValidationOpts,
+  LoggerOpts,
+  IdentifierGeneratorOpts,
+  AsyncEngravingOnFinishFunction,
+  EngravingOnFinishOpts,
+} from '../src/index.mjs';
 
 const contactModel: EngravingModel = {
   title: 'Engraving example',
@@ -51,18 +65,10 @@ const contactModel: EngravingModel = {
             title: 'Store contact to historical storage',
             uses: 'work:s3/historical-contact-address',
           },
-          'audit-journal': {
-            title: 'write to audit journal',
-            uses: 'work:s3/audit-journal',
-          },
-          'action-search-record': {
-            title: 'write title and description to search database',
-            uses: 'work:s3/contact-search',
-          },
         },
         onFinish: {
           title: 'Notify that the record has changed',
-          uses: 'work:sns/contact-ready',
+          uses: 'finish:sns/contact-ready',
         },
       },
     },
@@ -73,8 +79,69 @@ const engravingModelFixtures = {
   contact: contactModel,
 };
 
+const validateContact: AsyncEngravingValidationFunction = (
+  opts: EngravingValidationOpts
+) => {
+  return Promise.resolve({ status: 'success', value: opts });
+};
+
+const contactLogger: EngravingLoggerFunction = (opts: LoggerOpts) => {
+  return Promise.resolve();
+};
+
+const contactAlerter: AsyncEngravingAlerterFunction = (opts: AlerterOpts) => {
+  return Promise.resolve();
+};
+
+const contactGenerator: AsyncEngravingGeneratorFunction = ({
+  metadata,
+}: IdentifierGeneratorOpts) => {
+  return Promise.resolve(`${metadata['prefix']}:123`);
+};
+
+const contactWork: AsyncEngravingActionFunction = (mask: EngravingMask) => {
+  return Promise.resolve({ status: 'success', value: mask });
+};
+
+const contactFinish: AsyncEngravingOnFinishFunction = (
+  opts: EngravingOnFinishOpts
+) => {
+  return Promise.resolve({ status: 'success', value: opts });
+};
+
 export const createFixtureChisel = ({ modelId }: { modelId: 'contact' }) => {
   const builder = new EngravingChiselBuilder();
   builder.parseModel(engravingModelFixtures[modelId]);
+
+  builder.addLoggerFunction('logger:fake/log', contactLogger);
+  builder.addLoggerFunction('logger:fake/log2', contactLogger);
+
+  builder.addAlerterFunction('alerter:fake/alert', contactAlerter);
+  builder.addAlerterFunction('alerter:fake/alert2', contactAlerter);
+  builder.addAlerterFunction('alerter:fake/alert3', contactAlerter);
+
+  builder.addIdGeneratorFunction('generator:action/uuid', contactGenerator);
+  builder.addIdGeneratorFunction('generator:action/uuid2', contactGenerator);
+
+  builder.addValidationFunction('validation:contact:opts', validateContact);
+  builder.addValidationFunction('validation:contact:headers', validateContact);
+  builder.addValidationFunction(
+    'validation:contact:parameters',
+    validateContact
+  );
+  builder.addValidationFunction('validation:contact:payload', validateContact);
+  builder.addValidationFunction('validation:contact:context', validateContact);
+
+  builder.addShieldFunction('shield:contact:opts', validateContact);
+  builder.addShieldFunction('shield:contact:headers', validateContact);
+  builder.addShieldFunction('shield:contact:parameters', validateContact);
+  builder.addShieldFunction('shield:contact:payload', validateContact);
+  builder.addShieldFunction('shield:contact:context', validateContact);
+
+  builder.addActionFunction('work:s3/contact-address', contactWork);
+  builder.addActionFunction('work:s3/historical-contact-address', contactWork);
+  
+  builder.addOnFinishFunction('finish:sns/contact-ready', contactFinish)
+
   return builder;
 };

@@ -63,7 +63,7 @@ const phasesSchema = z
         logger: stringy.logger.optional(),
         alerter: stringy.alerter.optional(),
         generator: stringy.generator.optional(),      
-        uses: stringy.uses,
+        uses: stringy.finishId,
       })
       .describe(
         'The final action that will be called when all other actions will have finished'
