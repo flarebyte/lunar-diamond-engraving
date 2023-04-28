@@ -12,15 +12,27 @@ const actionsSchema = z.object({
 });
 
 const validation = z.object({
-  opts: stringy.schemaId.describe(
+  opts: stringy.validationId.describe(
     'Id for validating the options passed to processing'
   ),
-  headers: stringy.schemaId.describe('Id for validating the HTTP headers'),
-  parameters: stringy.schemaId.describe(
+  headers: stringy.validationId.describe('Id for validating the HTTP headers'),
+  parameters: stringy.validationId.describe(
     'Id for validating the query parameters'
   ),
-  payload: stringy.schemaId.describe('Id for validating the incoming payload'),
-  context: stringy.schemaId.describe('iId for validating context'),
+  payload: stringy.validationId.describe('Id for validating the incoming payload'),
+  context: stringy.validationId.describe('iId for validating context'),
+});
+
+const shield = z.object({
+  opts: stringy.shieldId.describe(
+    'Id for validating the options passed to processing'
+  ),
+  headers: stringy.shieldId.describe('Id for validating the HTTP headers'),
+  parameters: stringy.shieldId.describe(
+    'Id for validating the query parameters'
+  ),
+  payload: stringy.shieldId.describe('Id for validating the incoming payload'),
+  context: stringy.shieldId.describe('iId for validating context'),
 });
 const phasesSchema = z
   .object({
@@ -33,7 +45,7 @@ const phasesSchema = z
     }),
     shield: z.object({
       title: stringy.title.describe('What is been validated'),
-      check: validation.describe('Main validation that must be satisfied'),
+      check: shield.describe('Main validation that must be satisfied'),
       logger: stringy.logger.optional(),
       alerter: stringy.alerter.optional(),
       generator: stringy.generator.optional(),
@@ -44,6 +56,9 @@ const phasesSchema = z
     onFinish: z
       .object({
         title: stringy.title,
+        logger: stringy.logger.optional(),
+        alerter: stringy.alerter.optional(),
+        generator: stringy.generator.optional(),      
         uses: stringy.uses,
       })
       .describe(

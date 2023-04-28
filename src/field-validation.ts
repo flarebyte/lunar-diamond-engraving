@@ -26,6 +26,7 @@ export const stringy = {
     .trim()
     .min(1)
     .max(60)
+    .startsWith('work:')
     .refine(isSingleLine, { message: 'title should be a single line' })
     .describe('A unique key representing a function'),
   logger: z
@@ -33,6 +34,7 @@ export const stringy = {
     .trim()
     .min(1)
     .max(60)
+    .startsWith('logger:')
     .refine(isSingleLine, { message: 'title should be a single line' })
     .describe('A unique key representing a logger'),
   alerter: z
@@ -40,6 +42,7 @@ export const stringy = {
     .trim()
     .min(1)
     .max(60)
+    .startsWith('alerter:')
     .refine(isSingleLine, { message: 'title should be a single line' })
     .describe('A unique key representing an alerter'),
   generator: z
@@ -47,15 +50,25 @@ export const stringy = {
     .trim()
     .min(1)
     .max(60)
+    .startsWith('generator:')
     .refine(isSingleLine, { message: 'title should be a single line' })
     .describe('A unique key representing a generator'),
-  schemaId: z
+  validationId: z
     .string()
     .trim()
     .min(1)
     .max(60)
+    .startsWith('validation:')
     .refine(isSingleLine, { message: 'title should be a single line' })
-    .describe('A unique key representing a zod schema'),
+    .describe('A unique key representing the validation'),
+  shieldId: z
+    .string()
+    .trim()
+    .min(1)
+    .max(60)
+    .startsWith('shield:')
+    .refine(isSingleLine, { message: 'title should be a single line' })
+    .describe('A unique key representing the shield'),
   description: z
     .string()
     .trim()

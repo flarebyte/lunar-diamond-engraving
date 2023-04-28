@@ -38,18 +38,21 @@
                 "type": "string",
                 "minLength": 1,
                 "maxLength": 60,
+                "pattern": "^logger\\:",
                 "description": "A unique key representing a logger"
               },
               "alerter": {
                 "type": "string",
                 "minLength": 1,
                 "maxLength": 60,
+                "pattern": "^alerter\\:",
                 "description": "A unique key representing an alerter"
               },
               "generator": {
                 "type": "string",
                 "minLength": 1,
                 "maxLength": 60,
+                "pattern": "^generator\\:",
                 "description": "A unique key representing a generator"
               },
               "phases": {
@@ -69,6 +72,7 @@
                             "type": "string",
                             "minLength": 1,
                             "maxLength": 60,
+                            "pattern": "^validation\\:",
                             "description": "Id for validating the options passed to processing"
                           },
                           "headers": {
@@ -128,19 +132,27 @@
                         "type": "object",
                         "properties": {
                           "opts": {
-                            "$ref": "#/definitions/baldrick-pest-schema/properties/engravings/additionalProperties/properties/phases/properties/validation/properties/check/properties/opts"
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 60,
+                            "pattern": "^shield\\:",
+                            "description": "Id for validating the options passed to processing"
                           },
                           "headers": {
-                            "$ref": "#/definitions/baldrick-pest-schema/properties/engravings/additionalProperties/properties/phases/properties/validation/properties/check/properties/headers"
+                            "$ref": "#/definitions/baldrick-pest-schema/properties/engravings/additionalProperties/properties/phases/properties/shield/properties/check/properties/opts",
+                            "description": "Id for validating the HTTP headers"
                           },
                           "parameters": {
-                            "$ref": "#/definitions/baldrick-pest-schema/properties/engravings/additionalProperties/properties/phases/properties/validation/properties/check/properties/parameters"
+                            "$ref": "#/definitions/baldrick-pest-schema/properties/engravings/additionalProperties/properties/phases/properties/shield/properties/check/properties/opts",
+                            "description": "Id for validating the query parameters"
                           },
                           "payload": {
-                            "$ref": "#/definitions/baldrick-pest-schema/properties/engravings/additionalProperties/properties/phases/properties/validation/properties/check/properties/payload"
+                            "$ref": "#/definitions/baldrick-pest-schema/properties/engravings/additionalProperties/properties/phases/properties/shield/properties/check/properties/opts",
+                            "description": "Id for validating the incoming payload"
                           },
                           "context": {
-                            "$ref": "#/definitions/baldrick-pest-schema/properties/engravings/additionalProperties/properties/phases/properties/validation/properties/check/properties/context"
+                            "$ref": "#/definitions/baldrick-pest-schema/properties/engravings/additionalProperties/properties/phases/properties/shield/properties/check/properties/opts",
+                            "description": "iId for validating context"
                           }
                         },
                         "required": [
@@ -196,6 +208,7 @@
                           "type": "string",
                           "minLength": 1,
                           "maxLength": 60,
+                          "pattern": "^work\\:",
                           "description": "A unique key representing a function"
                         }
                       },
@@ -217,6 +230,18 @@
                     "properties": {
                       "title": {
                         "$ref": "#/definitions/baldrick-pest-schema/properties/title"
+                      },
+                      "logger": {
+                        "$ref": "#/definitions/baldrick-pest-schema/properties/engravings/additionalProperties/properties/logger",
+                        "description": "A unique key representing a logger"
+                      },
+                      "alerter": {
+                        "$ref": "#/definitions/baldrick-pest-schema/properties/engravings/additionalProperties/properties/alerter",
+                        "description": "A unique key representing an alerter"
+                      },
+                      "generator": {
+                        "$ref": "#/definitions/baldrick-pest-schema/properties/engravings/additionalProperties/properties/generator",
+                        "description": "A unique key representing a generator"
                       },
                       "uses": {
                         "$ref": "#/definitions/baldrick-pest-schema/properties/engravings/additionalProperties/properties/phases/properties/actions/additionalProperties/properties/uses"
