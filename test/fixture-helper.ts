@@ -43,9 +43,9 @@ const contactModel: EngravingModel = {
             title: 'Store contact to latest storage',
             keywords: 'S3',
             uses: 'work:s3/contact-address',
-            generator: 'generator:action/uuid',
+            generator: 'generator:action/uuid2',
             logger: 'logger:fake/log2',
-            alerter: 'alerter:fake/alert2',
+            alerter: 'alerter:fake/alert3',
           },
           'historical-store-contact': {
             title: 'Store contact to historical storage',

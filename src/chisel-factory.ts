@@ -31,6 +31,21 @@ const createKeyRefsForValidation = ({
 const byUniqueName = (value: string, index: number, self: string[]): boolean =>
   self.findIndex((v) => v === value) === index;
 
+const extractCommons = ({
+  logger,
+  alerter,
+  generator,
+}: {
+  logger?: string;
+  alerter?: string;
+  generator?: string;
+}): string[] => {
+  const hasLogger = logger === undefined ? [] : [logger];
+  const hasAlerter = alerter === undefined ? [] : [alerter];
+  const hasGenerator = generator === undefined ? [] : [generator];
+  return [...hasLogger, ...hasAlerter, ...hasGenerator];
+};
+
 /**
  * Builder for Engraving Chisel
  */
@@ -167,6 +182,16 @@ export class EngravingChiselBuilder {
       );
 
       unsortedUsed.push(engraving.phases.onFinish.uses);
+      unsortedUsed.push(
+        ...[
+          ...extractCommons(engraving.phases.validation),
+          ...extractCommons(engraving.phases.shield),
+          ...extractCommons(engraving.phases.onFinish),
+        ]
+      );
+      unsortedUsed.push(
+        ...Object.values(engraving.phases.actions).flatMap(extractCommons)
+      );
     }
     const used = unsortedUsed.filter(byUniqueName);
     const missing = used.filter((u) => !supported.includes(u));
