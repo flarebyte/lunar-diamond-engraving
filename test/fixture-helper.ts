@@ -14,6 +14,7 @@ const contactModel: EngravingModel = {
       phases: {
         validation: {
           title: 'Validate contact address',
+          keywords: 'zod',
           logger: 'logger:fake/log2',
           alerter: 'alerter:fake/alert2',
           check: {
@@ -26,6 +27,7 @@ const contactModel: EngravingModel = {
         },
         shield: {
           title: 'Validate contact address',
+          keywords: 'zod',
           logger: 'logger:fake/log2',
           alerter: 'alerter:fake/alert2',
           check: {
@@ -39,6 +41,7 @@ const contactModel: EngravingModel = {
         actions: {
           'store-contact': {
             title: 'Store contact to latest storage',
+            keywords: 'S3',
             uses: 'work:s3/contact-address',
             generator: 'generator:action/uuid',
             logger: 'logger:fake/log2',

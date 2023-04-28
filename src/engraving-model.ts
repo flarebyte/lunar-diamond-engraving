@@ -5,6 +5,7 @@ import { type Result, succeed, willFail } from './railway.js';
 
 const actionsSchema = z.object({
   title: stringy.title,
+  keywords: stringy.keywords.optional(),
   logger: stringy.logger.optional(),
   alerter: stringy.alerter.optional(),
   generator: stringy.generator.optional(),
@@ -38,6 +39,7 @@ const phasesSchema = z
   .object({
     validation: z.object({
       title: stringy.title.describe('What is been validated'),
+      keywords: stringy.keywords.optional(),
       check: validation.describe('Main validation that must be satisfied'),
       logger: stringy.logger.optional(),
       alerter: stringy.alerter.optional(),
@@ -45,6 +47,7 @@ const phasesSchema = z
     }),
     shield: z.object({
       title: stringy.title.describe('What is been validated'),
+      keywords: stringy.keywords.optional(),
       check: shield.describe('Main validation that must be satisfied'),
       logger: stringy.logger.optional(),
       alerter: stringy.alerter.optional(),
@@ -56,6 +59,7 @@ const phasesSchema = z
     onFinish: z
       .object({
         title: stringy.title,
+        keywords: stringy.keywords.optional(),
         logger: stringy.logger.optional(),
         alerter: stringy.alerter.optional(),
         generator: stringy.generator.optional(),      

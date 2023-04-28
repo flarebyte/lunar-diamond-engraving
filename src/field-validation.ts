@@ -21,6 +21,15 @@ export const stringy = {
     .min(1)
     .max(60)
     .refine(isSingleLine, { message: 'title should be a single line' }),
+  keywords: z
+    .string()
+    .trim()
+    .min(1)
+    .max(150)
+    .refine(isSingleLine, { message: 'keywords should be a single line' })
+    .describe(
+      'A list of custom keywords that can be used as metatadata for documentation'
+    ),
   uses: z
     .string()
     .trim()

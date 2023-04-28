@@ -65,6 +65,12 @@
                         "$ref": "#/definitions/baldrick-pest-schema/properties/title",
                         "description": "What is been validated"
                       },
+                      "keywords": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 150,
+                        "description": "A list of custom keywords that can be used as metatadata for documentation"
+                      },
                       "check": {
                         "type": "object",
                         "properties": {
@@ -127,6 +133,10 @@
                       "title": {
                         "$ref": "#/definitions/baldrick-pest-schema/properties/title",
                         "description": "What is been validated"
+                      },
+                      "keywords": {
+                        "$ref": "#/definitions/baldrick-pest-schema/properties/engravings/additionalProperties/properties/phases/properties/validation/properties/keywords",
+                        "description": "A list of custom keywords that can be used as metatadata for documentation"
                       },
                       "check": {
                         "type": "object",
@@ -192,6 +202,10 @@
                         "title": {
                           "$ref": "#/definitions/baldrick-pest-schema/properties/title"
                         },
+                        "keywords": {
+                          "$ref": "#/definitions/baldrick-pest-schema/properties/engravings/additionalProperties/properties/phases/properties/validation/properties/keywords",
+                          "description": "A list of custom keywords that can be used as metatadata for documentation"
+                        },
                         "logger": {
                           "$ref": "#/definitions/baldrick-pest-schema/properties/engravings/additionalProperties/properties/logger",
                           "description": "A unique key representing a logger"
@@ -230,6 +244,10 @@
                     "properties": {
                       "title": {
                         "$ref": "#/definitions/baldrick-pest-schema/properties/title"
+                      },
+                      "keywords": {
+                        "$ref": "#/definitions/baldrick-pest-schema/properties/engravings/additionalProperties/properties/phases/properties/validation/properties/keywords",
+                        "description": "A list of custom keywords that can be used as metatadata for documentation"
                       },
                       "logger": {
                         "$ref": "#/definitions/baldrick-pest-schema/properties/engravings/additionalProperties/properties/logger",
