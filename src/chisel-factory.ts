@@ -9,32 +9,12 @@ import {
 } from './api-model.js';
 import { EngravingModel, safeParseBuild } from './engraving-model.js';
 
-type RefCategory =
-  | 'action'
-  | 'onFinish'
-  | 'validation'
-  | 'shield'
-  | 'id-generator'
-  | 'logger'
-  | 'alerter';
-
-interface KeyReference {
-  name: string;
-  category: RefCategory;
-}
-
 interface ReferenceCheck {
-  unused: KeyReference[];
-  used: KeyReference[];
-  missing: KeyReference[];
-  supported: KeyReference[];
+  unused: string[];
+  used: string[];
+  missing: string[];
+  supported: string[];
 }
-
-const createKeyReferenceList = (
-  mapping: { [name: string]: any },
-  category: RefCategory
-): KeyReference[] => Object.keys(mapping).map((name) => ({ name, category }));
-
 const createKeyRefsForValidation = ({
   opts,
   headers,
@@ -47,22 +27,9 @@ const createKeyRefsForValidation = ({
   parameters: string;
   payload: string;
   context: string;
-}): KeyReference[] => [
-  { name: `${opts}`, category: 'validation' },
-  { name: `${headers}`, category: 'validation' },
-  { name: `${parameters}`, category: 'validation' },
-  { name: `${payload}`, category: 'validation' },
-  { name: `${context}`, category: 'validation' },
-];
-
-const byUniqueNameAndCategory = (
-  value: KeyReference,
-  index: number,
-  self: KeyReference[]
-): boolean =>
-  self.findIndex(
-    (v) => v.name === value.name && v.category === value.category
-  ) === index;
+}): string[] => [opts, headers, parameters, payload, context];
+const byUniqueName = (value: string, index: number, self: string[]): boolean =>
+  self.findIndex((v) => v === value) === index;
 
 /**
  * Builder for Engraving Chisel
@@ -74,14 +41,18 @@ export class EngravingChiselBuilder {
   private onFinishFunctions: {
     [name: string]: AsyncEngravingOnFinishFunction;
   } = {};
-  private validationFunctions: { [name: string]: AsyncEngravingValidationFunction } =
-    {};
-  private shieldFunctions: { [name: string]: AsyncEngravingValidationFunction } = {};
+  private validationFunctions: {
+    [name: string]: AsyncEngravingValidationFunction;
+  } = {};
+  private shieldFunctions: {
+    [name: string]: AsyncEngravingValidationFunction;
+  } = {};
   private idGeneratorFunctions: {
     [name: string]: AsyncIdentifierGeneratorFunction;
   } = {};
   private loggerFunctions: { [name: string]: EngravingLoggerFunction } = {};
-  private alerterFunctions: { [name: string]: AsyncEngravingAlerterFunction } = {};
+  private alerterFunctions: { [name: string]: AsyncEngravingAlerterFunction } =
+    {};
 
   public setModel(model: EngravingModel): this {
     this.model = model;
@@ -93,7 +64,10 @@ export class EngravingChiselBuilder {
     if (modelResult.status === 'success') {
       return this.setModel(modelResult.value);
     } else {
-      throw new Error('Chisel Factory Model is invalid: '+JSON.stringify(modelResult.error, null, 2));
+      throw new Error(
+        'Chisel Factory Model is invalid: ' +
+          JSON.stringify(modelResult.error, null, 2)
+      );
     }
   }
 
@@ -169,36 +143,32 @@ export class EngravingChiselBuilder {
 
   public checkReferences(): ReferenceCheck {
     if (this.model === undefined) throw new Error('Model is required');
-    const supported: KeyReference[] = [
-      ...createKeyReferenceList(this.actionFunctions, 'action'),
-      ...createKeyReferenceList(this.onFinishFunctions, 'onFinish'),
-      ...createKeyReferenceList(this.validationFunctions, 'validation'),
-      ...createKeyReferenceList(this.shieldFunctions, 'shield'),
-      ...createKeyReferenceList(this.idGeneratorFunctions, 'id-generator'),
-      ...createKeyReferenceList(this.loggerFunctions, 'logger'),
-      ...createKeyReferenceList(this.alerterFunctions, 'alerter'),
-    ].filter(byUniqueNameAndCategory);
+    const supported: string[] = [
+      ...Object.keys(this.actionFunctions),
+      ...Object.keys(this.validationFunctions),
+      ...Object.keys(this.shieldFunctions),
+      ...Object.keys(this.idGeneratorFunctions),
+      ...Object.keys(this.loggerFunctions),
+      ...Object.keys(this.alerterFunctions),
+      ...Object.keys(this.onFinishFunctions),
+    ].filter(byUniqueName);
 
-    let unsortedUsed: KeyReference[] = [];
+    let unsortedUsed: string[] = [];
     for (const engraving of Object.values(this.model.engravings)) {
       unsortedUsed.push(
         ...createKeyRefsForValidation(engraving.phases.validation.check)
       );
       unsortedUsed.push(
-        ...createKeyRefsForValidation(engraving.phases.validation.check)
+        ...createKeyRefsForValidation(engraving.phases.shield.check)
       );
 
       unsortedUsed.push(
-        ...Object.values(engraving.phases.actions).map(
-          (action) =>
-            ({
-              name: action.uses,
-              category: 'action',
-            } as KeyReference)
-        )
+        ...Object.values(engraving.phases.actions).map((action) => action.uses)
       );
+
+      unsortedUsed.push(engraving.phases.onFinish.uses);
     }
-    const used = unsortedUsed.filter(byUniqueNameAndCategory);
+    const used = unsortedUsed.filter(byUniqueName);
     const missing = used.filter((u) => !supported.includes(u));
     const unused = supported.filter((s) => !used.includes(s));
     return {
