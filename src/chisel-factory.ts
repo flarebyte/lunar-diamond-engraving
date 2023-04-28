@@ -170,6 +170,7 @@ export class EngravingChiselBuilder {
 
     let unsortedUsed: string[] = [];
     for (const engraving of Object.values(this.model.engravings)) {
+      unsortedUsed.push(...extractCommons(engraving));
       unsortedUsed.push(
         ...createKeyRefsForValidation(engraving.phases.validation.check)
       );
@@ -193,7 +194,7 @@ export class EngravingChiselBuilder {
         ...Object.values(engraving.phases.actions).flatMap(extractCommons)
       );
     }
-    const used = unsortedUsed.filter(byUniqueName);
+    const used = unsortedUsed.filter(byUniqueName).sort();
     const missing = used.filter((u) => !supported.includes(u));
     const unused = supported.filter((s) => !used.includes(s));
     return {

@@ -6,6 +6,9 @@ describe('chisel-factory.ts', () => {
   test('Check references', () => {
     const builder = createFixtureChisel({ modelId: 'contact' });
     const { used, supported, missing, unused } = builder.checkReferences();
-    assert.deepEqual(used, [])
+    assert.equal(used.length, 20, 'used');
+    assert.equal(supported.length, 20, 'supported');
+    assert.equal(missing.length, 0, 'missing');
+    assert.equal(unused.length, supported.length - used.length, 'unused');
   });
 });
