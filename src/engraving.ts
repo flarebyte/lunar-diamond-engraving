@@ -1,4 +1,4 @@
-import { EngravingMask, EngravingChisel } from './api-model.js';
+import { EngravingMask, EngravingChisel, LoggerOpts } from './api-model.js';
 import { SingleEngravingModel } from './engraving-model.js';
 
 const runValidation = async (
@@ -153,6 +153,15 @@ const runShield = async (
   return { isSuccess, ...results };
 };
 
+const getLogger = (chisel: EngravingChisel, name: string) => {
+  const func = chisel.loggerFunctions[name];
+  if (func === undefined){
+    throw Error(`Logger ${name} does not exist`)
+  }
+  return func;
+}
+
+
 export const runEngraving = async ({
   mask,
   chisel,
@@ -164,6 +173,7 @@ export const runEngraving = async ({
   if (engraving === undefined) {
     throw new Error(`Could not find engraving for ${mask.name}`);
   }
+  const defaultLogger = getLogger(chisel, engraving.logger);
   const { validation, shield, actions, onFinish } = engraving.phases;
   const shieldResult = await runShield(shield, mask, chisel);
   if (!shieldResult.isSuccess) {
