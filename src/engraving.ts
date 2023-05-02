@@ -150,17 +150,44 @@ const runShield = async (
     results.parameters.status === 'success' &&
     results.payload.status === 'success' &&
     results.context.status === 'success';
-  return { isSuccess, ...results };
+  const err = {
+    opts: results.opts.status === 'failure' ? [results.opts.error] : [],
+    headers:
+      results.headers.status === 'failure' ? [results.headers.error] : [],
+    parameters:
+      results.parameters.status === 'failure' ? [results.parameters.error] : [],
+    payload:
+      results.payload.status === 'failure' ? [results.payload.error] : [],
+    context:
+      results.context.status === 'failure' ? [results.context.error] : [],
+  };
+  const errors = [
+    ...err.opts,
+    ...err.headers,
+    ...err.parameters,
+    ...err.payload,
+    ...err.context,
+  ];
+
+  return { isSuccess, ...results, errors };
 };
 
-const getLogger = (chisel: EngravingChisel, name: string) => {
-  const func = chisel.loggerFunctions[name];
-  if (func === undefined){
-    throw Error(`Logger ${name} does not exist`)
+const getLogger = (
+  chisel: EngravingChisel,
+  defaultName: string,
+  name?: string
+) => {
+  const func =
+    typeof name === 'string' ? chisel.loggerFunctions[name] : undefined;
+  if (func !== undefined) {
+    return func;
   }
-  return func;
-}
-
+  const defaultFunc = chisel.loggerFunctions[defaultName];
+  if (defaultFunc !== undefined) {
+    return defaultFunc;
+  }
+  throw Error(`Neither ${name} not ${defaultName} were available as logger`);
+};
 
 export const runEngraving = async ({
   mask,
@@ -173,11 +200,21 @@ export const runEngraving = async ({
   if (engraving === undefined) {
     throw new Error(`Could not find engraving for ${mask.name}`);
   }
-  const defaultLogger = getLogger(chisel, engraving.logger);
   const { validation, shield, actions, onFinish } = engraving.phases;
   const shieldResult = await runShield(shield, mask, chisel);
   if (!shieldResult.isSuccess) {
-    // log issue
+    const shieldLogger = getLogger(
+      chisel,
+      engraving.logger,
+      engraving.phases.shield.logger
+    );
+    shieldLogger({
+      engravingInput: mask,
+      level: 'error',
+      metadata: {
+        shield: 'something',
+      },
+    });
     return;
   }
   const validationResult = await runValidation(validation, mask, chisel);
