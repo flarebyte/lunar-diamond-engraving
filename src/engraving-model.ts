@@ -99,6 +99,7 @@ export const schema = z
   .strict();
 
 export type EngravingModel = z.infer<typeof schema>;
+export type SingleEngravingModel = z.infer<typeof engravingSchema>;
 
 export type EngravingModelValidation = Result<
   EngravingModel,
