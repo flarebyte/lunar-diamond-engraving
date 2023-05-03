@@ -1,5 +1,23 @@
-import { EngravingMask, EngravingChisel, LoggerOpts } from './api-model.js';
+import {
+  EngravingMask,
+  EngravingChisel,
+  LoggerOpts,
+  AsyncEngravingActionFunction,
+  ActionError,
+  EngravingActionFunctionResult,
+} from './api-model.js';
 import { ActionModel, SingleEngravingModel } from './engraving-model.js';
+import { willFail } from './railway.js';
+
+function getErrorMessage(error: unknown): string {
+  if (error instanceof Error) return error.message;
+  return String(error);
+}
+
+function getErrorStack(error: unknown): string | undefined {
+  if (error instanceof Error) return error.stack;
+  return undefined;
+}
 
 const runValidation = async (
   validation: SingleEngravingModel['phases']['validation'],
@@ -235,15 +253,93 @@ const getUses = (chisel: EngravingChisel, name: string) => {
   throw Error(`Action uses function ${name} was not available`);
 };
 
+const isActionError = (value: unknown): value is ActionError => true;
+
+const createActionError = (
+  name: string,
+  mask: EngravingMask,
+  durationOrderOfMagnitude: number,
+  message: string
+): ActionError => ({
+  txId: mask.txId,
+  engraving: mask.name,
+  durationOrderOfMagnitude,
+  action: name,
+  metadata: {},
+  messages: [message],
+});
+
+const orderOfMagnitude = (started: number, finished: number): number => {
+  const diff = finished - started;
+  if (diff <= 0) return 0;
+  return `${diff}`.length;
+};
+
 const runAction = async (
   name: string,
   action: ActionModel,
   mask: EngravingMask,
   chisel: EngravingChisel
-) => {
-  const uses = getUses(chisel, action.uses);
-  return await uses(mask);
+): Promise<EngravingActionFunctionResult> => {
+  const started = Number(Date.now());
+  try {
+    const uses = getUses(chisel, action.uses);
+
+    return await uses(mask);
+  } catch (error) {
+    const finished = Number(Date.now());
+    if (isActionError(error)) {
+      return willFail(error);
+    }
+    if (error instanceof Error) {
+      return willFail(
+        createActionError(
+          name,
+          mask,
+          orderOfMagnitude(started, finished),
+          error.message
+        )
+      );
+    }
+
+    return willFail(
+      createActionError(
+        name,
+        mask,
+        orderOfMagnitude(started, finished),
+        '(542921) action default error'
+      )
+    );
+  }
 };
+
+const runOnFinish = async (
+  name: string,
+  onFinish: SingleEngravingModel['phases']['onFinish'],
+  actionErrors: ActionError[],
+  mask: EngravingMask,
+  chisel: EngravingChisel
+): Promise<EngravingActionFunctionResult> => {
+  try {
+    const uses = getUses(chisel, onFinish.uses);
+    return await uses(mask);
+  } catch (error) {
+    if (isActionError(error)) {
+      return willFail(error);
+    }
+    if (error instanceof Error) {
+      return willFail(createActionError(name, mask, error.message));
+    }
+
+    return willFail(
+      createActionError(name, mask, '(542921) action default error')
+    );
+  }
+};
+
+const isFulfilled = <T>(
+  input: PromiseSettledResult<T>
+): input is PromiseFulfilledResult<T> => input.status === 'fulfilled';
 
 export const runEngraving = async ({
   mask,
@@ -307,30 +403,15 @@ export const runEngraving = async ({
     });
   }
 
-  for (const actionName in actions) {
-    const action = actions[actionName];
-    if (action === undefined) {
-      continue;
-    }
-    try {
-      await runAction(actionName, action, mask, chisel);
-    } catch (e) {
-      const actionLogger = getLogger(chisel, engraving.logger, action.logger);
-      actionLogger({
-        engravingInput: mask,
-        level: 'action-error',
-        actionErrors: [],
-      });
-      const actionAlerter = getAlerter(
-        chisel,
-        engraving.alerter,
-        action.alerter
-      );
-      actionAlerter({
-        engravingInput: mask,
-        level: 'action-error',
-        actionErrors: [],
-      });
-    }
-  }
+  const actionPromises = Object.entries(actions).map((actionKeyvalue) =>
+    runAction(actionKeyvalue[0], actionKeyvalue[1], mask, chisel)
+  );
+
+  const settledActionResults = await Promise.allSettled(actionPromises);
+  const hasRejected = settledActionResults.some(
+    (res) => res.status === 'rejected'
+  );
+  const actionResults = settledActionResults
+    .filter(isFulfilled)
+    .map((res) => res.value);
 };

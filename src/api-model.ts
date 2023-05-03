@@ -61,12 +61,19 @@ export interface ValidationError {
 }
 
 export interface ActionError {
-  id: string;
   txId: string;
   engraving: string;
+  durationOrderOfMagnitude: number;
   action: string;
   metadata: { [key: string]: string };
   messages: string[];
+}
+
+export interface ActionSuccess {
+  txId: string;
+  engraving: string;
+  action: string;
+  durationOrderOfMagnitude: number;
 }
 
 export interface EngravingOnFinishOpts {
@@ -85,7 +92,7 @@ type EngravingValidationFunctionResult = Result<
   EngravingValidationOpts,
   ValidationError
 >;
-type EngravingActionFunctionResult = Result<EngravingMask, ActionError>;
+export type EngravingActionFunctionResult = Result<ActionSuccess, ActionError>;
 type EngravingOnFinishFunctionResult = Result<
   EngravingOnFinishOpts,
   OnFinishError
