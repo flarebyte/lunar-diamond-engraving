@@ -74,7 +74,26 @@ const runValidation = async (
     results.parameters.status === 'success' &&
     results.payload.status === 'success' &&
     results.context.status === 'success';
-  return { isSuccess, ...results };
+
+  const err = {
+    opts: results.opts.status === 'failure' ? [results.opts.error] : [],
+    headers:
+      results.headers.status === 'failure' ? [results.headers.error] : [],
+    parameters:
+      results.parameters.status === 'failure' ? [results.parameters.error] : [],
+    payload:
+      results.payload.status === 'failure' ? [results.payload.error] : [],
+    context:
+      results.context.status === 'failure' ? [results.context.error] : [],
+  };
+  const errors = [
+    ...err.opts,
+    ...err.headers,
+    ...err.parameters,
+    ...err.payload,
+    ...err.context,
+  ];
+  return { isSuccess, ...results, errors };
 };
 
 const runShield = async (
@@ -201,6 +220,22 @@ export const runEngraving = async ({
     throw new Error(`Could not find engraving for ${mask.name}`);
   }
   const { validation, shield, actions, onFinish } = engraving.phases;
+
+  const validationResult = await runValidation(validation, mask, chisel);
+  if (!validationResult.isSuccess) {
+    const validationLogger = getLogger(
+      chisel,
+      engraving.logger,
+      engraving.phases.validation.logger
+    );
+    validationLogger({
+      engravingInput: mask,
+      level: 'validation-error',
+      errors: validationResult.errors,
+    });
+    return;
+  }
+
   const shieldResult = await runShield(shield, mask, chisel);
   if (!shieldResult.isSuccess) {
     const shieldLogger = getLogger(
@@ -210,16 +245,8 @@ export const runEngraving = async ({
     );
     shieldLogger({
       engravingInput: mask,
-      level: 'error',
-      metadata: {
-        shield: 'something',
-      },
+      level: 'shield-error',
+      errors: validationResult.errors,
     });
-    return;
-  }
-  const validationResult = await runValidation(validation, mask, chisel);
-  if (!validationResult.isSuccess) {
-    // log issue
-    return;
   }
 };

@@ -18,11 +18,22 @@ export interface EngravingValidationOpts {
   engravingInput: EngravingMask;
 }
 
-export interface LoggerOpts {
-  engravingInput: EngravingMask;
-  level: 'info' | 'warn' | 'error';
-  metadata: { [key: string]: string };
-}
+export type LoggerOpts =
+  | {
+      level: 'info' | 'warn' | 'error';
+      engravingInput: EngravingMask;
+      metadata: { [key: string]: string };
+    }
+  | {
+      level: 'validation-error' | 'shield-error';
+      engravingInput: EngravingMask;
+      errors: ValidationError[];
+    }
+  | {
+      level: 'action-error';
+      engravingInput: EngravingMask;
+      actionErrors: ActionError[];
+    };
 
 export interface AlerterOpts {
   engravingInput: EngravingMask;
@@ -90,7 +101,9 @@ export type AsyncEngravingOnFinishFunction = (
 ) => Promise<EngravingOnFinishFunctionResult>;
 
 export type EngravingLoggerFunction = (opts: LoggerOpts) => void;
-export type AsyncEngravingAlerterFunction = (opts: AlerterOpts) => Promise<void>;
+export type AsyncEngravingAlerterFunction = (
+  opts: AlerterOpts
+) => Promise<void>;
 
 export interface EngravingChisel {
   model: EngravingModel;
