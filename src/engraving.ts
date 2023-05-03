@@ -1,5 +1,5 @@
 import { EngravingMask, EngravingChisel, LoggerOpts } from './api-model.js';
-import { SingleEngravingModel } from './engraving-model.js';
+import { ActionModel, SingleEngravingModel } from './engraving-model.js';
 
 const runValidation = async (
   validation: SingleEngravingModel['phases']['validation'],
@@ -225,6 +225,26 @@ const getAlerter = (
   throw Error(`Neither ${name} not ${defaultName} were available as alerter`);
 };
 
+const getUses = (chisel: EngravingChisel, name: string) => {
+  const func =
+    typeof name === 'string' ? chisel.actionFunctions[name] : undefined;
+  if (func !== undefined) {
+    return func;
+  }
+
+  throw Error(`Action uses function ${name} was not available`);
+};
+
+const runAction = async (
+  name: string,
+  action: ActionModel,
+  mask: EngravingMask,
+  chisel: EngravingChisel
+) => {
+  const uses = getUses(chisel, action.uses);
+  return await uses(mask);
+};
+
 export const runEngraving = async ({
   mask,
   chisel,
@@ -285,5 +305,32 @@ export const runEngraving = async ({
       level: 'shield-error',
       errors: validationResult.errors,
     });
+  }
+
+  for (const actionName in actions) {
+    const action = actions[actionName];
+    if (action === undefined) {
+      continue;
+    }
+    try {
+      await runAction(actionName, action, mask, chisel);
+    } catch (e) {
+      const actionLogger = getLogger(chisel, engraving.logger, action.logger);
+      actionLogger({
+        engravingInput: mask,
+        level: 'action-error',
+        actionErrors: [],
+      });
+      const actionAlerter = getAlerter(
+        chisel,
+        engraving.alerter,
+        action.alerter
+      );
+      actionAlerter({
+        engravingInput: mask,
+        level: 'action-error',
+        actionErrors: [],
+      });
+    }
   }
 };

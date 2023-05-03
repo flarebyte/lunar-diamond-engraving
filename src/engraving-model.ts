@@ -12,6 +12,8 @@ const actionsSchema = z.object({
   uses: stringy.uses,
 });
 
+export type ActionModel = z.infer<typeof actionsSchema>;
+
 const validation = z.object({
   opts: stringy.validationId.describe(
     'Id for validating the options passed to processing'
@@ -85,7 +87,6 @@ const engravingSchema = z
   .describe('Domain for engraving (ex: student)')
   .strict();
 
-export type Payload = z.infer<typeof schema>;
 export const schema = z
   .object({
     title: stringy.title,
