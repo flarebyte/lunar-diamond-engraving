@@ -208,6 +208,23 @@ const getLogger = (
   throw Error(`Neither ${name} not ${defaultName} were available as logger`);
 };
 
+const getAlerter = (
+  chisel: EngravingChisel,
+  defaultName: string,
+  name?: string
+) => {
+  const func =
+    typeof name === 'string' ? chisel.alerterFunctions[name] : undefined;
+  if (func !== undefined) {
+    return func;
+  }
+  const defaultFunc = chisel.alerterFunctions[defaultName];
+  if (defaultFunc !== undefined) {
+    return defaultFunc;
+  }
+  throw Error(`Neither ${name} not ${defaultName} were available as alerter`);
+};
+
 export const runEngraving = async ({
   mask,
   chisel,
@@ -233,6 +250,16 @@ export const runEngraving = async ({
       level: 'validation-error',
       errors: validationResult.errors,
     });
+    const validationAlerter = getAlerter(
+      chisel,
+      engraving.alerter,
+      engraving.phases.validation.alerter
+    );
+    validationAlerter({
+      engravingInput: mask,
+      level: 'validation-error',
+      errors: validationResult.errors,
+    });
     return;
   }
 
@@ -244,6 +271,16 @@ export const runEngraving = async ({
       engraving.phases.shield.logger
     );
     shieldLogger({
+      engravingInput: mask,
+      level: 'shield-error',
+      errors: validationResult.errors,
+    });
+    const shieldAlerter = getAlerter(
+      chisel,
+      engraving.alerter,
+      engraving.phases.shield.alerter
+    );
+    shieldAlerter({
       engravingInput: mask,
       level: 'shield-error',
       errors: validationResult.errors,

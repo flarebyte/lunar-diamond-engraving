@@ -35,10 +35,17 @@ export type LoggerOpts =
       actionErrors: ActionError[];
     };
 
-export interface AlerterOpts {
-  engravingInput: EngravingMask;
-  metadata: { [key: string]: string };
-}
+export type AlerterOpts =
+  | {
+      level: 'validation-error' | 'shield-error';
+      engravingInput: EngravingMask;
+      errors: ValidationError[];
+    }
+  | {
+      level: 'action-error';
+      engravingInput: EngravingMask;
+      actionErrors: ActionError[];
+    };
 
 export interface IdentifierGeneratorOpts {
   metadata: { [key: string]: string };
