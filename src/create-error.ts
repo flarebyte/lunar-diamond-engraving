@@ -1,5 +1,5 @@
 import {
-  EngravingMask, ActionError,
+  EngravingMask, EngravingActionError,
   OnFinishError
 } from './api-model.js';
 
@@ -9,7 +9,7 @@ export const createActionError = (
   mask: EngravingMask,
   durationOrderOfMagnitude: number,
   message: string
-): ActionError => ({
+): EngravingActionError => ({
   txId: mask.txId,
   engraving: mask.name,
   durationMagnitude: durationOrderOfMagnitude,

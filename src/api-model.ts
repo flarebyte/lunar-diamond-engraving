@@ -18,7 +18,7 @@ export interface EngravingValidationOpts {
   engravingInput: EngravingMask;
 }
 
-export type LoggerOpts =
+export type EngravingLoggerOpts =
   | {
       level: 'info' | 'warn' | 'error';
       engravingInput: EngravingMask;
@@ -32,7 +32,7 @@ export type LoggerOpts =
   | {
       level: 'action-error';
       engravingInput: EngravingMask;
-      actionErrors: ActionError[];
+      actionErrors: EngravingActionError[];
     };
 
 export interface ValidationError {
@@ -43,7 +43,7 @@ export interface ValidationError {
   messages: string[];
 }
 
-export interface ActionError {
+export interface EngravingActionError {
   txId: string;
   engraving: string;
   durationMagnitude: number;
@@ -52,7 +52,7 @@ export interface ActionError {
   messages: string[];
 }
 
-export interface ActionSuccess {
+export interface EngravingActionSuccess {
   txId: string;
   engraving: string;
   action: string;
@@ -76,7 +76,7 @@ type EngravingValidationFunctionResult = Result<
   EngravingValidationOpts,
   ValidationError
 >;
-export type EngravingActionFunctionResult = Result<ActionSuccess, ActionError>;
+export type EngravingActionFunctionResult = Result<EngravingActionSuccess, EngravingActionError>;
 
 export type EngravingOnFinishFunctionResult = Result<
   EngravingOnFinishOpts,
@@ -95,7 +95,7 @@ export type AsyncEngravingOnFinishFunction = (
   value: EngravingOnFinishOpts
 ) => Promise<EngravingOnFinishFunctionResult>;
 
-export type EngravingLoggerFunction = (opts: LoggerOpts) => void;
+export type EngravingLoggerFunction = (opts: EngravingLoggerOpts) => void;
 
 export interface EngravingChisel {
   model: EngravingModel;

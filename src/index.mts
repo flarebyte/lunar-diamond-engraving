@@ -6,7 +6,7 @@ import {
   EngravingLoggerFunction,
   AsyncEngravingOnFinishFunction,
   EngravingValidationOpts,
-  LoggerOpts,
+  EngravingLoggerOpts,
   EngravingOnFinishOpts,
 } from './api-model.js';
 
@@ -18,6 +18,6 @@ export type {
   EngravingLoggerFunction,
   AsyncEngravingOnFinishFunction,
   EngravingValidationOpts,
-  LoggerOpts,
+  EngravingLoggerOpts,
   EngravingOnFinishOpts,
 };

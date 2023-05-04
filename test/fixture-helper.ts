@@ -1,18 +1,14 @@
 import { EngravingChiselBuilder } from '../src/chisel-factory.js';
 import {
-  AlerterOpts,
   AsyncEngravingActionFunction,
-  AsyncEngravingAlerterFunction,
   AsyncEngravingValidationFunction,
-  AsyncEngravingGeneratorFunction,
   EngravingLoggerFunction,
   EngravingMask,
   EngravingModel,
   EngravingValidationOpts,
-  LoggerOpts,
-  IdentifierGeneratorOpts,
   AsyncEngravingOnFinishFunction,
   EngravingOnFinishOpts,
+  EngravingLoggerOpts,
 } from '../src/index.mjs';
 
 const contactModel: EngravingModel = {
@@ -91,18 +87,8 @@ const validateContactFail: AsyncEngravingValidationFunction = (
   });
 };
 
-const contactLogger: EngravingLoggerFunction = (opts: LoggerOpts) => {
+const contactLogger: EngravingLoggerFunction = (opts: EngravingLoggerOpts) => {
   return Promise.resolve();
-};
-
-const contactAlerter: AsyncEngravingAlerterFunction = (opts: AlerterOpts) => {
-  return Promise.resolve();
-};
-
-const contactGenerator: AsyncEngravingGeneratorFunction = ({
-  metadata,
-}: IdentifierGeneratorOpts) => {
-  return Promise.resolve(`${metadata['prefix']}:123`);
 };
 
 const contactWork: AsyncEngravingActionFunction = (mask: EngravingMask) => {
