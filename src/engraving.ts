@@ -5,6 +5,8 @@ import {
   AsyncEngravingActionFunction,
   ActionError,
   EngravingActionFunctionResult,
+  OnFinishError,
+  EngravingOnFinishFunctionResult,
 } from './api-model.js';
 import { ActionModel, SingleEngravingModel } from './engraving-model.js';
 import { willFail } from './railway.js';
@@ -253,6 +255,16 @@ const getUses = (chisel: EngravingChisel, name: string) => {
   throw Error(`Action uses function ${name} was not available`);
 };
 
+const geOnFinishtUses = (chisel: EngravingChisel, name: string) => {
+  const func =
+    typeof name === 'string' ? chisel.onFinishFunctions[name] : undefined;
+  if (func !== undefined) {
+    return func;
+  }
+
+  throw Error(`OnFinish uses function ${name} was not available`);
+};
+
 const isActionError = (value: unknown): value is ActionError => true;
 
 const createActionError = (
@@ -263,8 +275,20 @@ const createActionError = (
 ): ActionError => ({
   txId: mask.txId,
   engraving: mask.name,
-  durationOrderOfMagnitude,
+  durationMagnitude: durationOrderOfMagnitude,
   action: name,
+  metadata: {},
+  messages: [message],
+});
+
+const createFinishError = (
+  mask: EngravingMask,
+  durationOrderOfMagnitude: number,
+  message: string
+): OnFinishError => ({
+  txId: mask.txId,
+  engraving: mask.name,
+  durationMagnitude: durationOrderOfMagnitude,
   metadata: {},
   messages: [message],
 });
@@ -281,13 +305,13 @@ const runAction = async (
   mask: EngravingMask,
   chisel: EngravingChisel
 ): Promise<EngravingActionFunctionResult> => {
-  const started = Number(Date.now());
+  const started = Date.now();
   try {
     const uses = getUses(chisel, action.uses);
 
     return await uses(mask);
   } catch (error) {
-    const finished = Number(Date.now());
+    const finished = Date.now();
     if (isActionError(error)) {
       return willFail(error);
     }
@@ -314,25 +338,32 @@ const runAction = async (
 };
 
 const runOnFinish = async (
-  name: string,
   onFinish: SingleEngravingModel['phases']['onFinish'],
   actionErrors: ActionError[],
   mask: EngravingMask,
   chisel: EngravingChisel
-): Promise<EngravingActionFunctionResult> => {
+): Promise<EngravingOnFinishFunctionResult> => {
+  const started = Date.now();
   try {
-    const uses = getUses(chisel, onFinish.uses);
-    return await uses(mask);
+    const uses = geOnFinishtUses(chisel, onFinish.uses);
+    return await uses({ engravingInput: mask, actionErrors });
   } catch (error) {
+    const finished = Number(Date.now());
     if (isActionError(error)) {
       return willFail(error);
     }
     if (error instanceof Error) {
-      return willFail(createActionError(name, mask, error.message));
+      return willFail(
+        createFinishError(
+          mask,
+          orderOfMagnitude(started, finished),
+          error.message
+        )
+      );
     }
 
     return willFail(
-      createActionError(name, mask, '(542921) action default error')
+      createFinishError(mask, orderOfMagnitude(started, finished),'(936033) onFinish default error')
     );
   }
 };
@@ -413,5 +444,7 @@ export const runEngraving = async ({
   );
   const actionResults = settledActionResults
     .filter(isFulfilled)
-    .map((res) => res.value);
+    .map((res) => res.value).map( aRes => aRes.status==='failure');
+
+    await runOnFinish(onFinish, actionResults, mask, chisel)
 };
