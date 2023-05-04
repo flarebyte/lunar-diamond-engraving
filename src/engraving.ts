@@ -1,8 +1,6 @@
 import {
   EngravingMask,
   EngravingChisel,
-  LoggerOpts,
-  AsyncEngravingActionFunction,
   ActionError,
   EngravingActionFunctionResult,
   OnFinishError,
@@ -10,16 +8,6 @@ import {
 } from './api-model.js';
 import { ActionModel, SingleEngravingModel } from './engraving-model.js';
 import { willFail } from './railway.js';
-
-function getErrorMessage(error: unknown): string {
-  if (error instanceof Error) return error.message;
-  return String(error);
-}
-
-function getErrorStack(error: unknown): string | undefined {
-  if (error instanceof Error) return error.stack;
-  return undefined;
-}
 
 const runValidation = async (
   validation: SingleEngravingModel['phases']['validation'],
@@ -339,14 +327,14 @@ const runAction = async (
 
 const runOnFinish = async (
   onFinish: SingleEngravingModel['phases']['onFinish'],
-  actionErrors: ActionError[],
+  actionResults: EngravingActionFunctionResult[],
   mask: EngravingMask,
   chisel: EngravingChisel
 ): Promise<EngravingOnFinishFunctionResult> => {
   const started = Date.now();
   try {
     const uses = geOnFinishtUses(chisel, onFinish.uses);
-    return await uses({ engravingInput: mask, actionErrors });
+    return await uses({ engravingInput: mask, actionResults });
   } catch (error) {
     const finished = Number(Date.now());
     if (isActionError(error)) {
@@ -363,7 +351,11 @@ const runOnFinish = async (
     }
 
     return willFail(
-      createFinishError(mask, orderOfMagnitude(started, finished),'(936033) onFinish default error')
+      createFinishError(
+        mask,
+        orderOfMagnitude(started, finished),
+        '(936033) onFinish default error'
+      )
     );
   }
 };
@@ -444,7 +436,7 @@ export const runEngraving = async ({
   );
   const actionResults = settledActionResults
     .filter(isFulfilled)
-    .map((res) => res.value).map( aRes => aRes.status==='failure');
+    .map((res) => res.value);
 
-    await runOnFinish(onFinish, actionResults, mask, chisel)
+  await runOnFinish(onFinish, actionResults, mask, chisel);
 };

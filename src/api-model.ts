@@ -78,7 +78,7 @@ export interface ActionSuccess {
 
 export interface EngravingOnFinishOpts {
   engravingInput: EngravingMask;
-  actionErrors: ActionError[];
+  actionResults: EngravingActionFunctionResult[];
 }
 
 export interface OnFinishError {
