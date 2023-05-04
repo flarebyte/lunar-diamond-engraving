@@ -35,24 +35,7 @@ export type LoggerOpts =
       actionErrors: ActionError[];
     };
 
-export type AlerterOpts =
-  | {
-      level: 'validation-error' | 'shield-error';
-      engravingInput: EngravingMask;
-      errors: ValidationError[];
-    }
-  | {
-      level: 'action-error';
-      engravingInput: EngravingMask;
-      actionErrors: ActionError[];
-    };
-
-export interface IdentifierGeneratorOpts {
-  metadata: { [key: string]: string };
-}
-
 export interface ValidationError {
-  id: string;
   txId: string;
   engraving: string;
   target: 'opts' | 'headers' | 'parameters' | 'payload' | 'context';
@@ -104,10 +87,6 @@ export type AsyncEngravingValidationFunction = (
   value: EngravingValidationOpts
 ) => Promise<EngravingValidationFunctionResult>;
 
-export type AsyncEngravingGeneratorFunction = (
-  value: IdentifierGeneratorOpts
-) => Promise<string>;
-
 export type AsyncEngravingActionFunction = (
   value: EngravingMask
 ) => Promise<EngravingActionFunctionResult>;
@@ -117,9 +96,6 @@ export type AsyncEngravingOnFinishFunction = (
 ) => Promise<EngravingOnFinishFunctionResult>;
 
 export type EngravingLoggerFunction = (opts: LoggerOpts) => void;
-export type AsyncEngravingAlerterFunction = (
-  opts: AlerterOpts
-) => Promise<void>;
 
 export interface EngravingChisel {
   model: EngravingModel;
@@ -127,7 +103,5 @@ export interface EngravingChisel {
   onFinishFunctions: { [name: string]: AsyncEngravingOnFinishFunction };
   validationFunctions: { [name: string]: AsyncEngravingValidationFunction };
   shieldFunctions: { [name: string]: AsyncEngravingValidationFunction };
-  idGeneratorFunctions: { [name: string]: AsyncEngravingGeneratorFunction };
   loggerFunctions: { [name: string]: EngravingLoggerFunction };
-  alerterFunctions: { [name: string]: AsyncEngravingAlerterFunction };
 }

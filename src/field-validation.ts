@@ -54,22 +54,6 @@ export const stringy = {
     .startsWith('logger:')
     .refine(isSingleLine, { message: 'title should be a single line' })
     .describe('A unique key representing a logger'),
-  alerter: z
-    .string()
-    .trim()
-    .min(1)
-    .max(60)
-    .startsWith('alerter:')
-    .refine(isSingleLine, { message: 'title should be a single line' })
-    .describe('A unique key representing an alerter'),
-  generator: z
-    .string()
-    .trim()
-    .min(1)
-    .max(60)
-    .startsWith('generator:')
-    .refine(isSingleLine, { message: 'title should be a single line' })
-    .describe('A unique key representing a generator'),
   validationId: z
     .string()
     .trim()

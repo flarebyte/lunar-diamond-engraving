@@ -22,15 +22,11 @@ const contactModel: EngravingModel = {
   engravings: {
     'contact-address': {
       title: 'Write to address for contact',
-      generator: 'generator:fake/uuid',
       logger: 'logger:fake/log',
-      alerter: 'alerter:fake/alert',
       phases: {
         validation: {
           title: 'Validate contact address',
           keywords: 'zod',
-          logger: 'logger:fake/log2',
-          alerter: 'alerter:fake/alert2',
           check: {
             opts: 'validation:contact/opts',
             headers: 'validation:contact/headers',
@@ -42,8 +38,6 @@ const contactModel: EngravingModel = {
         shield: {
           title: 'Validate contact address',
           keywords: 'zod',
-          logger: 'logger:fake/log2',
-          alerter: 'alerter:fake/alert2',
           check: {
             opts: 'shield:contact/opts',
             headers: 'shield:contact/headers',
@@ -57,9 +51,6 @@ const contactModel: EngravingModel = {
             title: 'Store contact to latest storage',
             keywords: 'S3',
             uses: 'work:s3/contact-address',
-            generator: 'generator:action/uuid2',
-            logger: 'logger:fake/log2',
-            alerter: 'alerter:fake/alert3',
           },
           'historical-store-contact': {
             title: 'Store contact to historical storage',
@@ -91,7 +82,6 @@ const validateContactFail: AsyncEngravingValidationFunction = (
   return Promise.resolve({
     status: 'failure',
     value: {
-      id: '1667',
       txId: opts.engravingInput.txId,
       engraving: opts.engravingInput.name,
       target: opts.target,
@@ -145,14 +135,7 @@ export const createFixtureChisel = ({ modelId }: { modelId: 'contact' }) => {
 
   builder.addLoggerFunction('logger:fake/log', contactLogger);
   builder.addLoggerFunction('logger:fake/log2', contactLogger);
-
-  builder.addAlerterFunction('alerter:fake/alert', contactAlerter);
-  builder.addAlerterFunction('alerter:fake/alert2', contactAlerter);
-  builder.addAlerterFunction('alerter:fake/alert3', contactAlerter);
-
-  builder.addIdGeneratorFunction('generator:fake/uuid', contactGenerator);
-  builder.addIdGeneratorFunction('generator:action/uuid2', contactGenerator);
-
+  
   builder.addValidationFunction('validation:contact/opts', validateContact);
   builder.addValidationFunction('validation:contact/headers', validateContact);
   builder.addValidationFunction(

@@ -2,41 +2,22 @@ import { EngravingChisel } from './api-model.js';
 
 export const getLogger = (
   chisel: EngravingChisel,
-  defaultName: string,
-  name?: string
+  name: string,
 ) => {
-  const func = typeof name === 'string' ? chisel.loggerFunctions[name] : undefined;
-  if (func !== undefined) {
-    return func;
-  }
-  const defaultFunc = chisel.loggerFunctions[defaultName];
+  const defaultFunc = chisel.loggerFunctions[name];
   if (defaultFunc !== undefined) {
     return defaultFunc;
   }
-  throw Error(`Neither ${name} not ${defaultName} were available as logger`);
+  throw Error(`${name} is not available as a logger (825309)`);
 };
-export const getAlerter = (
-  chisel: EngravingChisel,
-  defaultName: string,
-  name?: string
-) => {
-  const func = typeof name === 'string' ? chisel.alerterFunctions[name] : undefined;
-  if (func !== undefined) {
-    return func;
-  }
-  const defaultFunc = chisel.alerterFunctions[defaultName];
-  if (defaultFunc !== undefined) {
-    return defaultFunc;
-  }
-  throw Error(`Neither ${name} not ${defaultName} were available as alerter`);
-};
+
 export const getUses = (chisel: EngravingChisel, name: string) => {
   const func = typeof name === 'string' ? chisel.actionFunctions[name] : undefined;
   if (func !== undefined) {
     return func;
   }
 
-  throw Error(`Action uses function ${name} was not available`);
+  throw Error(`${name} is not available as an action uses (589684)`);
 };
 export const geOnFinishtUses = (chisel: EngravingChisel, name: string) => {
   const func = typeof name === 'string' ? chisel.onFinishFunctions[name] : undefined;
@@ -44,5 +25,5 @@ export const geOnFinishtUses = (chisel: EngravingChisel, name: string) => {
     return func;
   }
 
-  throw Error(`OnFinish uses function ${name} was not available`);
+  throw Error(`${name} is not available as a OnFinish uses (848649)`);
 };

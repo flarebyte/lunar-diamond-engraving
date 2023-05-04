@@ -6,9 +6,6 @@ import { type Result, succeed, willFail } from './railway.js';
 const actionsSchema = z.object({
   title: stringy.title,
   keywords: stringy.keywords.optional(),
-  logger: stringy.logger.optional(),
-  alerter: stringy.alerter.optional(),
-  generator: stringy.generator.optional(),
   uses: stringy.uses,
 });
 
@@ -43,17 +40,11 @@ const phasesSchema = z
       title: stringy.title.describe('What is been validated'),
       keywords: stringy.keywords.optional(),
       check: validation.describe('Main validation that must be satisfied'),
-      logger: stringy.logger.optional(),
-      alerter: stringy.alerter.optional(),
-      generator: stringy.generator.optional(),
     }),
     shield: z.object({
       title: stringy.title.describe('What is been validated'),
       keywords: stringy.keywords.optional(),
       check: shield.describe('Main validation that must be satisfied'),
-      logger: stringy.logger.optional(),
-      alerter: stringy.alerter.optional(),
-      generator: stringy.generator.optional(),
     }),
     actions: z
       .record(stringy.customKey, actionsSchema)
@@ -62,9 +53,6 @@ const phasesSchema = z
       .object({
         title: stringy.title,
         keywords: stringy.keywords.optional(),
-        logger: stringy.logger.optional(),
-        alerter: stringy.alerter.optional(),
-        generator: stringy.generator.optional(),      
         uses: stringy.finishId,
       })
       .describe(
@@ -78,8 +66,6 @@ const engravingSchema = z
     title: stringy.title.describe('A concise title describing the domain'),
     url: stringy.url.optional(),
     logger: stringy.logger,
-    alerter: stringy.alerter,
-    generator: stringy.generator,
     phases: phasesSchema.describe(
       'The different phases of engraving the domain'
     ),

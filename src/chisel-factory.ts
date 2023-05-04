@@ -1,8 +1,6 @@
 import {
   AsyncEngravingActionFunction,
   AsyncEngravingOnFinishFunction,
-  AsyncEngravingGeneratorFunction,
-  AsyncEngravingAlerterFunction,
   EngravingChisel,
   EngravingLoggerFunction,
   AsyncEngravingValidationFunction,
@@ -62,12 +60,7 @@ export class EngravingChiselBuilder {
   private shieldFunctions: {
     [name: string]: AsyncEngravingValidationFunction;
   } = {};
-  private idGeneratorFunctions: {
-    [name: string]: AsyncEngravingGeneratorFunction;
-  } = {};
   private loggerFunctions: { [name: string]: EngravingLoggerFunction } = {};
-  private alerterFunctions: { [name: string]: AsyncEngravingAlerterFunction } =
-    {};
 
   public setModel(model: EngravingModel): this {
     this.model = model;
@@ -118,27 +111,11 @@ export class EngravingChiselBuilder {
     return this;
   }
 
-  public addIdGeneratorFunction(
-    name: string,
-    idGeneratorFunction: AsyncEngravingGeneratorFunction
-  ): this {
-    this.idGeneratorFunctions[name] = idGeneratorFunction;
-    return this;
-  }
-
   public addLoggerFunction(
     name: string,
     loggerFunction: EngravingLoggerFunction
   ): this {
     this.loggerFunctions[name] = loggerFunction;
-    return this;
-  }
-
-  public addAlerterFunction(
-    name: string,
-    alerterFunction: AsyncEngravingAlerterFunction
-  ): this {
-    this.alerterFunctions[name] = alerterFunction;
     return this;
   }
 
@@ -150,9 +127,7 @@ export class EngravingChiselBuilder {
       onFinishFunctions: this.onFinishFunctions,
       validationFunctions: this.validationFunctions,
       shieldFunctions: this.shieldFunctions,
-      idGeneratorFunctions: this.idGeneratorFunctions,
       loggerFunctions: this.loggerFunctions,
-      alerterFunctions: this.alerterFunctions,
     };
   }
 
@@ -162,9 +137,7 @@ export class EngravingChiselBuilder {
       ...Object.keys(this.actionFunctions),
       ...Object.keys(this.validationFunctions),
       ...Object.keys(this.shieldFunctions),
-      ...Object.keys(this.idGeneratorFunctions),
       ...Object.keys(this.loggerFunctions),
-      ...Object.keys(this.alerterFunctions),
       ...Object.keys(this.onFinishFunctions),
     ].filter(byUniqueName);
 
@@ -183,16 +156,6 @@ export class EngravingChiselBuilder {
       );
 
       unsortedUsed.push(engraving.phases.onFinish.uses);
-      unsortedUsed.push(
-        ...[
-          ...extractCommons(engraving.phases.validation),
-          ...extractCommons(engraving.phases.shield),
-          ...extractCommons(engraving.phases.onFinish),
-        ]
-      );
-      unsortedUsed.push(
-        ...Object.values(engraving.phases.actions).flatMap(extractCommons)
-      );
     }
     const used = unsortedUsed.filter(byUniqueName).sort();
     const missing = used.filter((u) => !supported.includes(u));

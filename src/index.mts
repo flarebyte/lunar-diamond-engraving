@@ -4,14 +4,10 @@ import {
   AsyncEngravingValidationFunction,
   AsyncEngravingActionFunction,
   EngravingLoggerFunction,
-  AsyncEngravingAlerterFunction,
-  AsyncEngravingGeneratorFunction,
   AsyncEngravingOnFinishFunction,
   EngravingValidationOpts,
   LoggerOpts,
-  AlerterOpts,
   EngravingOnFinishOpts,
-  IdentifierGeneratorOpts
 } from './api-model.js';
 
 export type {
@@ -20,13 +16,8 @@ export type {
   AsyncEngravingValidationFunction,
   AsyncEngravingActionFunction,
   EngravingLoggerFunction,
-  AsyncEngravingAlerterFunction,
-  AsyncEngravingGeneratorFunction,
   AsyncEngravingOnFinishFunction,
   EngravingValidationOpts,
   LoggerOpts,
-  AlerterOpts,
   EngravingOnFinishOpts,
-  IdentifierGeneratorOpts
-
 };

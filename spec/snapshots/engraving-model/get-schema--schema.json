@@ -41,20 +41,6 @@
                 "pattern": "^logger\\:",
                 "description": "A unique key representing a logger"
               },
-              "alerter": {
-                "type": "string",
-                "minLength": 1,
-                "maxLength": 60,
-                "pattern": "^alerter\\:",
-                "description": "A unique key representing an alerter"
-              },
-              "generator": {
-                "type": "string",
-                "minLength": 1,
-                "maxLength": 60,
-                "pattern": "^generator\\:",
-                "description": "A unique key representing a generator"
-              },
               "phases": {
                 "type": "object",
                 "properties": {
@@ -107,18 +93,6 @@
                         ],
                         "additionalProperties": false,
                         "description": "Main validation that must be satisfied"
-                      },
-                      "logger": {
-                        "$ref": "#/definitions/baldrick-pest-schema/properties/engravings/additionalProperties/properties/logger",
-                        "description": "A unique key representing a logger"
-                      },
-                      "alerter": {
-                        "$ref": "#/definitions/baldrick-pest-schema/properties/engravings/additionalProperties/properties/alerter",
-                        "description": "A unique key representing an alerter"
-                      },
-                      "generator": {
-                        "$ref": "#/definitions/baldrick-pest-schema/properties/engravings/additionalProperties/properties/generator",
-                        "description": "A unique key representing a generator"
                       }
                     },
                     "required": [
@@ -174,18 +148,6 @@
                         ],
                         "additionalProperties": false,
                         "description": "Main validation that must be satisfied"
-                      },
-                      "logger": {
-                        "$ref": "#/definitions/baldrick-pest-schema/properties/engravings/additionalProperties/properties/logger",
-                        "description": "A unique key representing a logger"
-                      },
-                      "alerter": {
-                        "$ref": "#/definitions/baldrick-pest-schema/properties/engravings/additionalProperties/properties/alerter",
-                        "description": "A unique key representing an alerter"
-                      },
-                      "generator": {
-                        "$ref": "#/definitions/baldrick-pest-schema/properties/engravings/additionalProperties/properties/generator",
-                        "description": "A unique key representing a generator"
                       }
                     },
                     "required": [
@@ -205,18 +167,6 @@
                         "keywords": {
                           "$ref": "#/definitions/baldrick-pest-schema/properties/engravings/additionalProperties/properties/phases/properties/validation/properties/keywords",
                           "description": "A list of custom keywords that can be used as metatadata for documentation"
-                        },
-                        "logger": {
-                          "$ref": "#/definitions/baldrick-pest-schema/properties/engravings/additionalProperties/properties/logger",
-                          "description": "A unique key representing a logger"
-                        },
-                        "alerter": {
-                          "$ref": "#/definitions/baldrick-pest-schema/properties/engravings/additionalProperties/properties/alerter",
-                          "description": "A unique key representing an alerter"
-                        },
-                        "generator": {
-                          "$ref": "#/definitions/baldrick-pest-schema/properties/engravings/additionalProperties/properties/generator",
-                          "description": "A unique key representing a generator"
                         },
                         "uses": {
                           "type": "string",
@@ -249,18 +199,6 @@
                         "$ref": "#/definitions/baldrick-pest-schema/properties/engravings/additionalProperties/properties/phases/properties/validation/properties/keywords",
                         "description": "A list of custom keywords that can be used as metatadata for documentation"
                       },
-                      "logger": {
-                        "$ref": "#/definitions/baldrick-pest-schema/properties/engravings/additionalProperties/properties/logger",
-                        "description": "A unique key representing a logger"
-                      },
-                      "alerter": {
-                        "$ref": "#/definitions/baldrick-pest-schema/properties/engravings/additionalProperties/properties/alerter",
-                        "description": "A unique key representing an alerter"
-                      },
-                      "generator": {
-                        "$ref": "#/definitions/baldrick-pest-schema/properties/engravings/additionalProperties/properties/generator",
-                        "description": "A unique key representing a generator"
-                      },
                       "uses": {
                         "type": "string",
                         "minLength": 1,
@@ -290,8 +228,6 @@
             "required": [
               "title",
               "logger",
-              "alerter",
-              "generator",
               "phases"
             ],
             "additionalProperties": false,
