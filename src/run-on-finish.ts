@@ -1,20 +1,22 @@
 import {
   EngravingMask,
-  EngravingChisel, EngravingActionFunctionResult, EngravingOnFinishFunctionResult
+  EngravingChisel,
+  EngravingActionResult,
+  OnFinishResult
 } from './api-model.js';
 import { SingleEngravingModel } from './engraving-model.js';
 import { geOnFinishtUses } from './chisel-lookup.js';
 import { isActionError } from './guards.js';
-import { willFail } from './railway.js';
+import { Result, willFail } from './railway.js';
 import { orderOfMagnitude } from './utility.js';
 import { createFinishError } from "./create-error.js";
 
 export const runOnFinish = async (
   onFinish: SingleEngravingModel['phases']['onFinish'],
-  actionResults: EngravingActionFunctionResult[],
+  actionResults: Result<EngravingActionResult, EngravingActionResult>[],
   mask: EngravingMask,
   chisel: EngravingChisel
-): Promise<EngravingOnFinishFunctionResult> => {
+): Promise<Result<OnFinishResult, OnFinishResult>> => {
   const started = Date.now();
   try {
     const uses = geOnFinishtUses(chisel, onFinish.uses);

@@ -32,68 +32,44 @@ export type EngravingLoggerOpts =
   | {
       level: 'action-error';
       engravingInput: EngravingMask;
-      actionErrors: EngravingActionError[];
+      actionErrors: EngravingActionResult[];
     };
 
-export interface ValidationError {
+export interface BaseResult {
   txId: string;
   engraving: string;
+  metadata: { [key: string]: string };
+  durationMagnitude: number;
+  messages: string[];
+}
+
+export interface ValidationError extends BaseResult {
   target: 'opts' | 'headers' | 'parameters' | 'payload' | 'context';
-  metadata: { [key: string]: string };
-  messages: string[];
+  exitOnFailure: boolean;
 }
 
-export interface EngravingActionError {
-  txId: string;
-  engraving: string;
-  durationMagnitude: number;
+export interface EngravingActionResult extends BaseResult {
   action: string;
-  metadata: { [key: string]: string };
-  messages: string[];
-}
-
-export interface EngravingActionSuccess {
-  txId: string;
-  engraving: string;
-  action: string;
-  durationMagnitude: number;
 }
 
 export interface EngravingOnFinishOpts {
   engravingInput: EngravingMask;
-  actionResults: EngravingActionFunctionResult[];
+  actionResults: Result<EngravingActionResult, EngravingActionResult>[];
 }
 
-export interface OnFinishError {
-  txId: string;
-  engraving: string;
-  metadata: { [key: string]: string };
-  messages: string[];
-  durationMagnitude: number;
-}
-
-type EngravingValidationFunctionResult = Result<
-  EngravingValidationOpts,
-  ValidationError
->;
-export type EngravingActionFunctionResult = Result<EngravingActionSuccess, EngravingActionError>;
-
-export type EngravingOnFinishFunctionResult = Result<
-  EngravingOnFinishOpts,
-  OnFinishError
->;
+export interface OnFinishResult extends BaseResult {}
 
 export type AsyncEngravingValidationFunction = (
   value: EngravingValidationOpts
-) => Promise<EngravingValidationFunctionResult>;
+) => Promise<Result<EngravingValidationOpts, ValidationError>>;
 
 export type AsyncEngravingActionFunction = (
   value: EngravingMask
-) => Promise<EngravingActionFunctionResult>;
+) => Promise<Result<EngravingActionResult, EngravingActionResult>>;
 
 export type AsyncEngravingOnFinishFunction = (
   value: EngravingOnFinishOpts
-) => Promise<EngravingOnFinishFunctionResult>;
+) => Promise<Result<OnFinishResult, OnFinishResult>>;
 
 export type EngravingLoggerFunction = (opts: EngravingLoggerOpts) => void;
 

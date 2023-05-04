@@ -1,11 +1,12 @@
 import {
   EngravingMask,
-  EngravingChisel, EngravingActionFunctionResult
+  EngravingChisel,
+  EngravingActionResult
 } from './api-model.js';
 import { ActionModel } from './engraving-model.js';
 import { getUses } from './chisel-lookup.js';
 import { isActionError } from './guards.js';
-import { willFail } from './railway.js';
+import { Result, willFail } from './railway.js';
 import { orderOfMagnitude } from './utility.js';
 import { createActionError } from "./create-error.js";
 
@@ -14,7 +15,7 @@ export const runAction = async (
   action: ActionModel,
   mask: EngravingMask,
   chisel: EngravingChisel
-): Promise<EngravingActionFunctionResult> => {
+): Promise<Result<EngravingActionResult, EngravingActionResult>> => {
   const started = Date.now();
   try {
     const uses = getUses(chisel, action.uses);

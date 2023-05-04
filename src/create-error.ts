@@ -1,6 +1,5 @@
 import {
-  EngravingMask, EngravingActionError,
-  OnFinishError
+  EngravingMask, EngravingActionResult, OnFinishResult,
 } from './api-model.js';
 
 
@@ -9,7 +8,7 @@ export const createActionError = (
   mask: EngravingMask,
   durationOrderOfMagnitude: number,
   message: string
-): EngravingActionError => ({
+): EngravingActionResult => ({
   txId: mask.txId,
   engraving: mask.name,
   durationMagnitude: durationOrderOfMagnitude,
@@ -22,7 +21,7 @@ export const createFinishError = (
   mask: EngravingMask,
   durationOrderOfMagnitude: number,
   message: string
-): OnFinishError => ({
+): OnFinishResult => ({
   txId: mask.txId,
   engraving: mask.name,
   durationMagnitude: durationOrderOfMagnitude,
