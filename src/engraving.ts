@@ -51,9 +51,9 @@ export const runEngraving = async ({
   );
 
   const settledActionResults = await Promise.allSettled(actionPromises);
-  const hasRejected = settledActionResults.some(
-    (res) => res.status === 'rejected'
-  );
+  // const hasRejected = settledActionResults.some(
+  //   (res) => res.status === 'rejected'
+  // );
   const actionResults = settledActionResults
     .filter(isFulfilled)
     .map((res) => res.value);

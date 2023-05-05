@@ -13,10 +13,10 @@ import {
 export type {
   EngravingMask,
   EngravingModel,
-  EngravingValidationFunction as AsyncEngravingValidationFunction,
-  EngravingActionFunction as AsyncEngravingActionFunction,
+  EngravingValidationFunction,
+  EngravingActionFunction,
   EngravingLoggerFunction,
-  EngravingOnFinishFunction as AsyncEngravingOnFinishFunction,
+  EngravingOnFinishFunction,
   EngravingValidationOpts,
   EngravingLoggerOpts,
   EngravingOnFinishOpts,
