@@ -1,12 +1,18 @@
+import {
+  EngravingValidationFunction,
+  EngravingActionResult,
+  EngravingValidationError,
+  EngravingValidationSuccess,
+  EngravingActionFunction,
+  EngravingOnFinishResult,
+  EngravingOnFinishFunction,
+} from '../src/api-model.js';
 import { EngravingChiselBuilder } from '../src/chisel-factory.js';
 import {
-  AsyncEngravingActionFunction,
-  AsyncEngravingValidationFunction,
   EngravingLoggerFunction,
   EngravingMask,
   EngravingModel,
   EngravingValidationOpts,
-  AsyncEngravingOnFinishFunction,
   EngravingOnFinishOpts,
   EngravingLoggerOpts,
 } from '../src/index.mjs';
@@ -66,53 +72,81 @@ const engravingModelFixtures = {
   contact: contactModel,
 };
 
-const validateContact: AsyncEngravingValidationFunction = (
+const validateContact: EngravingValidationFunction = (
   opts: EngravingValidationOpts
 ) => {
-  return Promise.resolve({ status: 'success', value: opts });
+  const value: EngravingValidationSuccess = {
+    txId: opts.engravingInput.txId,
+    engraving: opts.engravingInput.name,
+    target: opts.target,
+    metadata: { city: 'London' },
+    messages: ['Validation fails'],
+    durationMagnitude: 2,
+    validated: opts.object,
+  };
+  return Promise.resolve({ status: 'success', value });
 };
 
-const validateContactFail: AsyncEngravingValidationFunction = (
+const validateContactFail: EngravingValidationFunction = (
   opts: EngravingValidationOpts
 ) => {
+  const error: EngravingValidationError = {
+    txId: opts.engravingInput.txId,
+    engraving: opts.engravingInput.name,
+    target: opts.target,
+    metadata: { city: 'London' },
+    messages: ['Validation fails'],
+    durationMagnitude: 2,
+    exitOnFailure: true,
+  };
   return Promise.resolve({
     status: 'failure',
-    value: {
-      txId: opts.engravingInput.txId,
-      engraving: opts.engravingInput.name,
-      target: opts.target,
-      metadata: { city: 'London' },
-      messages: 'Validation fails',
-    },
+    error,
   });
 };
 
-const contactLogger: EngravingLoggerFunction = (opts: EngravingLoggerOpts) => {
+const contactLogger: EngravingLoggerFunction = (_opts: EngravingLoggerOpts) => {
   return Promise.resolve();
 };
 
-const contactWork: AsyncEngravingActionFunction = (mask: EngravingMask) => {
-  return Promise.resolve({ status: 'success', value: mask });
+const contactWork: EngravingActionFunction = (mask: EngravingMask) => {
+  const value: EngravingActionResult = {
+    txId: mask.txId,
+    engraving: mask.name,
+    action: 'contactWork',
+    metadata: { account: '98' },
+    messages: [],
+    durationMagnitude: 2,
+  };
+  return Promise.resolve({ status: 'success', value });
 };
 
-const contactWorkFail: AsyncEngravingActionFunction = (mask: EngravingMask) => {
+const contactWorkFail: EngravingActionFunction = (mask: EngravingMask) => {
+  const error: EngravingActionResult = {
+    txId: mask.txId,
+    engraving: mask.name,
+    action: 'contactWorkFail',
+    metadata: { account: '98' },
+    messages: ['contact work fail'],
+    durationMagnitude: 2,
+  };
   return Promise.resolve({
     status: 'failure',
-    error: {
-      id: '1666',
-      txId: mask.txId,
-      engraving: mask.name,
-      action: 'contactWorkFail',
-      metadata: { account: '98' },
-      messages: ['contact work fail'],
-    },
+    error,
   });
 };
 
-const contactFinish: AsyncEngravingOnFinishFunction = (
+const contactFinish: EngravingOnFinishFunction = (
   opts: EngravingOnFinishOpts
 ) => {
-  return Promise.resolve({ status: 'success', value: opts });
+  const value: EngravingOnFinishResult = {
+    txId: opts.engravingInput.txId,
+    engraving: opts.engravingInput.name,
+    metadata: {},
+    durationMagnitude: 2,
+    messages: [],
+  };
+  return Promise.resolve({ status: 'success', value });
 };
 
 export const createFixtureChisel = ({ modelId }: { modelId: 'contact' }) => {
@@ -121,7 +155,7 @@ export const createFixtureChisel = ({ modelId }: { modelId: 'contact' }) => {
 
   builder.addLoggerFunction('logger:fake/log', contactLogger);
   builder.addLoggerFunction('logger:fake/log2', contactLogger);
-  
+
   builder.addValidationFunction('validation:contact/opts', validateContact);
   builder.addValidationFunction('validation:contact/headers', validateContact);
   builder.addValidationFunction(

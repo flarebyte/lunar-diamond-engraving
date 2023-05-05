@@ -1,10 +1,10 @@
 import { EngravingModel } from './engraving-model.js';
 import {
   EngravingMask,
-  AsyncEngravingValidationFunction,
-  AsyncEngravingActionFunction,
+  EngravingValidationFunction,
+  EngravingActionFunction,
   EngravingLoggerFunction,
-  AsyncEngravingOnFinishFunction,
+  EngravingOnFinishFunction,
   EngravingValidationOpts,
   EngravingLoggerOpts,
   EngravingOnFinishOpts,
@@ -13,10 +13,10 @@ import {
 export type {
   EngravingMask,
   EngravingModel,
-  AsyncEngravingValidationFunction,
-  AsyncEngravingActionFunction,
+  EngravingValidationFunction as AsyncEngravingValidationFunction,
+  EngravingActionFunction as AsyncEngravingActionFunction,
   EngravingLoggerFunction,
-  AsyncEngravingOnFinishFunction,
+  EngravingOnFinishFunction as AsyncEngravingOnFinishFunction,
   EngravingValidationOpts,
   EngravingLoggerOpts,
   EngravingOnFinishOpts,

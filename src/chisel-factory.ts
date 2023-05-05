@@ -1,9 +1,9 @@
 import {
-  AsyncEngravingActionFunction,
-  AsyncEngravingOnFinishFunction,
+  EngravingActionFunction,
+  EngravingOnFinishFunction,
   EngravingChisel,
   EngravingLoggerFunction,
-  AsyncEngravingValidationFunction,
+  EngravingValidationFunction,
 } from './api-model.js';
 import { EngravingModel, safeParseBuild } from './engraving-model.js';
 
@@ -49,16 +49,16 @@ const extractCommons = ({
  */
 export class EngravingChiselBuilder {
   private model?: EngravingModel;
-  private actionFunctions: { [name: string]: AsyncEngravingActionFunction } =
+  private actionFunctions: { [name: string]: EngravingActionFunction } =
     {};
   private onFinishFunctions: {
-    [name: string]: AsyncEngravingOnFinishFunction;
+    [name: string]: EngravingOnFinishFunction;
   } = {};
   private validationFunctions: {
-    [name: string]: AsyncEngravingValidationFunction;
+    [name: string]: EngravingValidationFunction;
   } = {};
   private shieldFunctions: {
-    [name: string]: AsyncEngravingValidationFunction;
+    [name: string]: EngravingValidationFunction;
   } = {};
   private loggerFunctions: { [name: string]: EngravingLoggerFunction } = {};
 
@@ -81,7 +81,7 @@ export class EngravingChiselBuilder {
 
   public addActionFunction(
     name: string,
-    actionFunction: AsyncEngravingActionFunction
+    actionFunction: EngravingActionFunction
   ): this {
     this.actionFunctions[name] = actionFunction;
     return this;
@@ -89,7 +89,7 @@ export class EngravingChiselBuilder {
 
   public addOnFinishFunction(
     name: string,
-    onFinishFunction: AsyncEngravingOnFinishFunction
+    onFinishFunction: EngravingOnFinishFunction
   ): this {
     this.onFinishFunctions[name] = onFinishFunction;
     return this;
@@ -97,7 +97,7 @@ export class EngravingChiselBuilder {
 
   public addValidationFunction(
     name: string,
-    validationFunction: AsyncEngravingValidationFunction
+    validationFunction: EngravingValidationFunction
   ): this {
     this.validationFunctions[name] = validationFunction;
     return this;
@@ -105,7 +105,7 @@ export class EngravingChiselBuilder {
 
   public addShieldFunction(
     name: string,
-    shieldFunction: AsyncEngravingValidationFunction
+    shieldFunction: EngravingValidationFunction
   ): this {
     this.shieldFunctions[name] = shieldFunction;
     return this;

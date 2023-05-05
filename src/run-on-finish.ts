@@ -2,7 +2,7 @@ import {
   EngravingMask,
   EngravingChisel,
   EngravingActionResult,
-  OnFinishResult
+  EngravingOnFinishResult
 } from './api-model.js';
 import { SingleEngravingModel } from './engraving-model.js';
 import { geOnFinishtUses } from './chisel-lookup.js';
@@ -16,7 +16,7 @@ export const runOnFinish = async (
   actionResults: Result<EngravingActionResult, EngravingActionResult>[],
   mask: EngravingMask,
   chisel: EngravingChisel
-): Promise<Result<OnFinishResult, OnFinishResult>> => {
+): Promise<Result<EngravingOnFinishResult, EngravingOnFinishResult>> => {
   const started = Date.now();
   try {
     const uses = geOnFinishtUses(chisel, onFinish.uses);

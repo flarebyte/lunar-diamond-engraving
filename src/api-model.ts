@@ -1,6 +1,8 @@
 import { EngravingModel } from './engraving-model.js';
 import { Result } from './railway.js';
 
+type ValidationTarget = 'opts' | 'headers' | 'parameters' | 'payload' | 'context'
+
 /** The incoming input to write */
 export interface EngravingMask {
   name: string;
@@ -13,7 +15,7 @@ export interface EngravingMask {
 }
 
 export interface EngravingValidationOpts {
-  target: 'opts' | 'headers' | 'parameters' | 'payload' | 'context';
+  target: ValidationTarget;
   object: object;
   engravingInput: EngravingMask;
 }
@@ -27,7 +29,7 @@ export type EngravingLoggerOpts =
   | {
       level: 'validation-error' | 'shield-error';
       engravingInput: EngravingMask;
-      errors: ValidationError[];
+      errors: EngravingValidationError[];
     }
   | {
       level: 'action-error';
@@ -43,9 +45,14 @@ export interface BaseResult {
   messages: string[];
 }
 
-export interface ValidationError extends BaseResult {
-  target: 'opts' | 'headers' | 'parameters' | 'payload' | 'context';
+export interface EngravingValidationError extends BaseResult {
+  target: ValidationTarget;
   exitOnFailure: boolean;
+}
+
+export interface EngravingValidationSuccess extends BaseResult {
+  target: ValidationTarget;
+  validated: object
 }
 
 export interface EngravingActionResult extends BaseResult {
@@ -57,27 +64,27 @@ export interface EngravingOnFinishOpts {
   actionResults: Result<EngravingActionResult, EngravingActionResult>[];
 }
 
-export interface OnFinishResult extends BaseResult {}
+export interface EngravingOnFinishResult extends BaseResult {}
 
-export type AsyncEngravingValidationFunction = (
+export type EngravingValidationFunction = (
   value: EngravingValidationOpts
-) => Promise<Result<EngravingValidationOpts, ValidationError>>;
+) => Promise<Result<EngravingValidationSuccess, EngravingValidationError>>;
 
-export type AsyncEngravingActionFunction = (
+export type EngravingActionFunction = (
   value: EngravingMask
 ) => Promise<Result<EngravingActionResult, EngravingActionResult>>;
 
-export type AsyncEngravingOnFinishFunction = (
+export type EngravingOnFinishFunction = (
   value: EngravingOnFinishOpts
-) => Promise<Result<OnFinishResult, OnFinishResult>>;
+) => Promise<Result<EngravingOnFinishResult, EngravingOnFinishResult>>;
 
 export type EngravingLoggerFunction = (opts: EngravingLoggerOpts) => void;
 
 export interface EngravingChisel {
   model: EngravingModel;
-  actionFunctions: { [name: string]: AsyncEngravingActionFunction };
-  onFinishFunctions: { [name: string]: AsyncEngravingOnFinishFunction };
-  validationFunctions: { [name: string]: AsyncEngravingValidationFunction };
-  shieldFunctions: { [name: string]: AsyncEngravingValidationFunction };
+  actionFunctions: { [name: string]: EngravingActionFunction };
+  onFinishFunctions: { [name: string]: EngravingOnFinishFunction };
+  validationFunctions: { [name: string]: EngravingValidationFunction };
+  shieldFunctions: { [name: string]: EngravingValidationFunction };
   loggerFunctions: { [name: string]: EngravingLoggerFunction };
 }
