@@ -7,10 +7,15 @@ import {
 } from './api-model.js';
 import { EngravingModel, safeParseBuild } from './engraving-model.js';
 
-interface ReferenceCheck {
+/** List usage of the references to function */
+interface EngravingReferenceCheck {
+  /** Unused references*/
   unused: string[];
+  /** Uses references*/
   used: string[];
+  /** Missing references that are been used */
   missing: string[];
+  /** All the supported references */
   supported: string[];
 }
 const createKeyRefsForValidation = ({
@@ -45,12 +50,11 @@ const extractCommons = ({
 };
 
 /**
- * Builder for Engraving Chisel
+ * Builder for setting up the different tools (chisel) required to run the engraving
  */
 export class EngravingChiselBuilder {
   private model?: EngravingModel;
-  private actionFunctions: { [name: string]: EngravingActionFunction } =
-    {};
+  private actionFunctions: { [name: string]: EngravingActionFunction } = {};
   private onFinishFunctions: {
     [name: string]: EngravingOnFinishFunction;
   } = {};
@@ -67,6 +71,7 @@ export class EngravingChiselBuilder {
     return this;
   }
 
+  /** Parse and validate the engraving model*/
   public parseModel(model: object): this {
     const modelResult = safeParseBuild(model);
     if (modelResult.status === 'success') {
@@ -79,6 +84,7 @@ export class EngravingChiselBuilder {
     }
   }
 
+  /** Add an action */
   public addActionFunction(
     name: string,
     actionFunction: EngravingActionFunction
@@ -87,6 +93,7 @@ export class EngravingChiselBuilder {
     return this;
   }
 
+  /** Add an OnFinish function */
   public addOnFinishFunction(
     name: string,
     onFinishFunction: EngravingOnFinishFunction
@@ -95,6 +102,7 @@ export class EngravingChiselBuilder {
     return this;
   }
 
+  /** Add a validation function */
   public addValidationFunction(
     name: string,
     validationFunction: EngravingValidationFunction
@@ -103,6 +111,7 @@ export class EngravingChiselBuilder {
     return this;
   }
 
+  /** Add a shield function that could detect suspicious payload */
   public addShieldFunction(
     name: string,
     shieldFunction: EngravingValidationFunction
@@ -111,6 +120,7 @@ export class EngravingChiselBuilder {
     return this;
   }
 
+  /** Add a logger function  */
   public addLoggerFunction(
     name: string,
     loggerFunction: EngravingLoggerFunction
@@ -119,6 +129,7 @@ export class EngravingChiselBuilder {
     return this;
   }
 
+  /** Build the EngravingChisel object  */
   public build(): EngravingChisel {
     if (this.model === undefined) throw new Error('Model is required');
     return {
@@ -131,7 +142,10 @@ export class EngravingChiselBuilder {
     };
   }
 
-  public checkReferences(): ReferenceCheck {
+  /**
+   * Check that every functions that is been referenced is available
+   */
+  public checkReferences(): EngravingReferenceCheck {
     if (this.model === undefined) throw new Error('Model is required');
     const supported: string[] = [
       ...Object.keys(this.actionFunctions),

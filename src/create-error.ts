@@ -1,30 +1,40 @@
 import {
-  EngravingMask, EngravingActionResult, EngravingOnFinishResult,
+  EngravingMask,
+  EngravingActionResult,
+  EngravingOnFinishResult,
 } from './api-model.js';
 
-
-export const createActionError = (
-  name: string,
-  mask: EngravingMask,
-  durationOrderOfMagnitude: number,
-  message: string
-): EngravingActionResult => ({
+export const createActionError = ({
+  name,
+  mask,
+  durationMagnitude,
+  message,
+}: {
+  name: string;
+  mask: EngravingMask;
+  durationMagnitude: number;
+  message: string;
+}): EngravingActionResult => ({
   txId: mask.txId,
   engraving: mask.name,
-  durationMagnitude: durationOrderOfMagnitude,
+  durationMagnitude,
   action: name,
   metadata: {},
   messages: [message],
 });
 
-export const createFinishError = (
-  mask: EngravingMask,
-  durationOrderOfMagnitude: number,
-  message: string
-): EngravingOnFinishResult => ({
+export const createFinishError = ({
+  mask,
+  message,
+  durationMagnitude,
+}: {
+  mask: EngravingMask;
+  durationMagnitude: number;
+  message: string;
+}): EngravingOnFinishResult => ({
   txId: mask.txId,
   engraving: mask.name,
-  durationMagnitude: durationOrderOfMagnitude,
+  durationMagnitude,
   metadata: {},
   messages: [message],
 });

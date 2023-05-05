@@ -1,15 +1,18 @@
 import {
   EngravingMask,
   EngravingChisel,
-  EngravingActionResult
+  EngravingActionResult,
 } from './api-model.js';
 import { ActionModel } from './engraving-model.js';
 import { getUses } from './chisel-lookup.js';
 import { isActionError } from './guards.js';
 import { Result, willFail } from './railway.js';
 import { orderOfMagnitude } from './utility.js';
-import { createActionError } from "./create-error.js";
+import { createActionError } from './create-error.js';
 
+/**
+ * Run an action converting any exception to a failure result
+ */
 export const runAction = async (
   name: string,
   action: ActionModel,
@@ -27,23 +30,24 @@ export const runAction = async (
       return willFail(error);
     }
     if (error instanceof Error) {
+      const { message } = error;
       return willFail(
-        createActionError(
+        createActionError({
           name,
           mask,
-          orderOfMagnitude(started, finished),
-          error.message
-        )
+          durationMagnitude: orderOfMagnitude(started, finished),
+          message,
+        })
       );
     }
 
     return willFail(
-      createActionError(
+      createActionError({
         name,
         mask,
-        orderOfMagnitude(started, finished),
-        '(542921) action default error'
-      )
+        durationMagnitude: orderOfMagnitude(started, finished),
+        message: '(542921) action default error',
+      })
     );
   }
 };

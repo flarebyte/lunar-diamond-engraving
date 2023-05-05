@@ -25,5 +25,5 @@ export const geOnFinishtUses = (chisel: EngravingChisel, name: string) => {
     return func;
   }
 
-  throw Error(`${name} is not available as a OnFinish uses (848649)`);
+  throw Error(`${name} is not available as an OnFinish uses (848649)`);
 };
