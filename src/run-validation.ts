@@ -1,5 +1,50 @@
-import { EngravingMask, EngravingChisel } from './api-model.js';
+import {
+  EngravingMask,
+  EngravingChisel,
+  EngravingValidationSuccess,
+  EngravingValidationError,
+  EngravingValidationOpts,
+  EngravingValidationFunction,
+} from './api-model.js';
+import { createValidationError } from './create-error.js';
 import { SingleEngravingModel } from './engraving-model.js';
+import { Result, willFail } from './railway.js';
+import { orderOfMagnitude } from './utility.js';
+
+const saferValidate = async (
+  decorated: EngravingValidationFunction,
+  value: EngravingValidationOpts
+): Promise<Result<EngravingValidationSuccess, EngravingValidationError>> => {
+  const started = Date.now();
+  try {
+    const result = await decorated(value);
+    return result;
+  } catch (error) {
+    const finished = Date.now();
+    if (error instanceof Error) {
+      const { message } = error;
+      return willFail(
+        createValidationError({
+          target: value.target,
+          mask: value.engravingInput,
+          durationMagnitude: orderOfMagnitude(started, finished),
+          message,
+          exitOnFailure: true,
+        })
+      );
+    }
+
+    return willFail(
+      createValidationError({
+        target: value.target,
+        mask: value.engravingInput,
+        durationMagnitude: orderOfMagnitude(started, finished),
+        message: '(175612) validation default error',
+        exitOnFailure: true,
+      })
+    );
+  }
+};
 
 /** Run validation converting any exception to a failure result */
 export const runValidation = async (
@@ -42,27 +87,27 @@ export const runValidation = async (
   }
 
   const results = {
-    opts: await validate.opts({
+    opts: await saferValidate(validate.opts, {
       target: 'opts',
       object: mask.opts,
       engravingInput: mask,
     }),
-    headers: await validate.opts({
+    headers: await saferValidate(validate.opts, {
       target: 'headers',
       object: mask.headers,
       engravingInput: mask,
     }),
-    parameters: await validate.opts({
+    parameters: await saferValidate(validate.opts, {
       target: 'parameters',
       object: mask.parameters,
       engravingInput: mask,
     }),
-    payload: await validate.opts({
+    payload: await saferValidate(validate.opts, {
       target: 'payload',
       object: mask.payload,
       engravingInput: mask,
     }),
-    context: await validate.opts({
+    context: await saferValidate(validate.opts, {
       target: 'context',
       object: mask.context,
       engravingInput: mask,

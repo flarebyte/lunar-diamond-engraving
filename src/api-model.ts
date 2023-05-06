@@ -1,7 +1,7 @@
 import { EngravingModel } from './engraving-model.js';
 import { Result } from './railway.js';
 
-type ValidationTarget =
+export type EngravingValidationTarget =
   | 'opts'
   | 'headers'
   | 'parameters'
@@ -37,7 +37,7 @@ export interface EngravingMask {
  */
 export interface EngravingValidationOpts {
   /** The specific field in EngravingMask we are targetting*/
-  target: ValidationTarget;
+  target: EngravingValidationTarget;
 
   /** The JSON object */
   object: object;
@@ -83,7 +83,7 @@ interface BaseResult {
 /** An error result resulting from a failed validation */
 export interface EngravingValidationError extends BaseResult {
   /** The specific field in EngravingMask we are targetting*/
-  target: ValidationTarget;
+  target: EngravingValidationTarget;
 
   /** This flag should be set to true if we want to interrupt the engraving if the validation fails */
   exitOnFailure: boolean;
@@ -92,7 +92,7 @@ export interface EngravingValidationError extends BaseResult {
 /** An success result resulting from a successful validation */
 export interface EngravingValidationSuccess extends BaseResult {
   /** The specific field in EngravingMask we are targetting*/
-  target: ValidationTarget;
+  target: EngravingValidationTarget;
 
   /** The sanitized input */
   validated: object;

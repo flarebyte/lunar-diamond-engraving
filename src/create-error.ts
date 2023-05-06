@@ -2,6 +2,8 @@ import {
   EngravingMask,
   EngravingActionResult,
   EngravingOnFinishResult,
+  EngravingValidationError,
+  EngravingValidationTarget,
 } from './api-model.js';
 
 export const createActionError = ({
@@ -37,4 +39,26 @@ export const createFinishError = ({
   durationMagnitude,
   metadata: {},
   messages: [message],
+});
+
+export const createValidationError = ({
+  target,
+  mask,
+  durationMagnitude,
+  message,
+  exitOnFailure,
+}: {
+  target: EngravingValidationTarget;
+  mask: EngravingMask;
+  durationMagnitude: number;
+  message: string;
+  exitOnFailure: boolean;
+}): EngravingValidationError => ({
+  txId: mask.txId,
+  engraving: mask.name,
+  target: target,
+  durationMagnitude,
+  metadata: {},
+  messages: [message],
+  exitOnFailure,
 });
