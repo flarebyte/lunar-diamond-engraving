@@ -30,7 +30,7 @@ export const runEngraving = async ({
   if (!validationResult.isSuccess) {
     logger({
       engravingInput: mask,
-      level: 'validation-error',
+      level: 'validation/error',
       errors: validationResult.errors,
     });
     return;
@@ -40,7 +40,7 @@ export const runEngraving = async ({
   if (!shieldResult.isSuccess) {
     logger({
       engravingInput: mask,
-      level: 'shield-error',
+      level: 'shield/error',
       errors: validationResult.errors,
     });
   }

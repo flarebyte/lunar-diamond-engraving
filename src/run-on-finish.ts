@@ -2,14 +2,14 @@ import {
   EngravingMask,
   EngravingChisel,
   EngravingActionResult,
-  EngravingOnFinishResult
+  EngravingOnFinishResult,
 } from './api-model.js';
 import { SingleEngravingModel } from './engraving-model.js';
 import { geOnFinishtUses } from './chisel-lookup.js';
 import { isActionError } from './guards.js';
 import { Result, willFail } from './railway.js';
 import { orderOfMagnitude } from './utility.js';
-import { createFinishError } from "./create-error.js";
+import { createFinishError } from './create-error.js';
 
 export const runOnFinish = async (
   onFinish: SingleEngravingModel['phases']['onFinish'],
@@ -28,20 +28,20 @@ export const runOnFinish = async (
     }
     if (error instanceof Error) {
       return willFail(
-        createFinishError(
+        createFinishError({
           mask,
-          orderOfMagnitude(started, finished),
-          error.message
-        )
+          durationMagnitude: orderOfMagnitude(started, finished),
+          message: error.message,
+        })
       );
     }
 
     return willFail(
-      createFinishError(
+      createFinishError({
         mask,
-        orderOfMagnitude(started, finished),
-        '(936033) onFinish default error'
-      )
+        durationMagnitude: orderOfMagnitude(started, finished),
+        message: '(936033) onFinish default error',
+      })
     );
   }
 };
