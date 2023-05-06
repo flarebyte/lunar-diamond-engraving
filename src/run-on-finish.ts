@@ -11,6 +11,7 @@ import { Result, willFail } from './railway.js';
 import { orderOfMagnitude } from './utility.js';
 import { createFinishError } from './create-error.js';
 
+/** Run onFinish converting any exception to a failure result */
 export const runOnFinish = async (
   onFinish: SingleEngravingModel['phases']['onFinish'],
   actionResults: Result<EngravingActionResult, EngravingActionResult>[],

@@ -4,10 +4,12 @@ import {
 } from './api-model.js';
 import { getLogger } from './chisel-lookup.js';
 import { isFulfilled } from './guards.js';
-import { runValidation, runShield } from './run-validation.js';
+import { runValidation } from './run-validation.js';
 import { runAction } from './run-action.js';
 import { runOnFinish } from './run-on-finish.js';
+import { runShield } from './run-shield.js';
 
+/** Run the engraving with a mask (input) and a chisel (tooling) */
 export const runEngraving = async ({
   mask,
   chisel,
