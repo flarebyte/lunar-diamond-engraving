@@ -1,7 +1,4 @@
-import {
-  EngravingMask,
-  EngravingChisel,
-} from './api-model.js';
+import { EngravingMask, EngravingChisel } from './api-model.js';
 import { getLogger } from './chisel-lookup.js';
 import { isFulfilled } from './guards.js';
 import { runValidation } from './run-validation.js';
@@ -21,15 +18,17 @@ export const runEngraving = async ({
   if (engraving === undefined) {
     throw new Error(`${mask.name} is not available as an engraving (292272)`);
   }
-  const logger = getLogger(
-    chisel,
-    engraving.logger
-  );
+  const logger = getLogger(chisel, engraving.logger);
 
   const { validation, shield, actions, onFinish } = engraving.phases;
 
   const validationResult = await runValidation(validation, mask, chisel);
-  if (!validationResult.isSuccess) {
+  if (validationResult.isSuccess) {
+    logger({
+      engravingInput: mask,
+      level: 'validation/success',
+    });
+  } else {
     logger({
       engravingInput: mask,
       level: 'validation/error',
@@ -39,7 +38,12 @@ export const runEngraving = async ({
   }
 
   const shieldResult = await runShield(shield, mask, chisel);
-  if (!shieldResult.isSuccess) {
+  if (shieldResult.isSuccess) {
+    logger({
+      engravingInput: mask,
+      level: 'shield/success',
+    });
+  } else {
     logger({
       engravingInput: mask,
       level: 'shield/error',

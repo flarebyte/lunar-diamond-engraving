@@ -57,6 +57,10 @@ export type EngravingLoggerOpts =
       errors: EngravingValidationError[];
     }
   | {
+      level: 'validation/success' | 'shield/success';
+      engravingInput: EngravingMask;
+    }
+  | {
       level: 'action/error';
       engravingInput: EngravingMask;
       actionErrors: EngravingActionResult[];
