@@ -2,16 +2,24 @@ model:
   project:
     title: Engrave your records in the ultimate space-time capsule
     description: |
-      Event store writing library
+      Small Typescript framework to direct the persistence of json data.
     version: 0.1.0
     keywords:
       - Event store
       - AWS Cloud
   readme:
     highlights:
-      - Written in `Typescript`
+      - Structured model in json to describe the engraving process
+      - Dependency injection of the different engraving actions and validations
+      - Works with any cloud platform
+      - Reduce the complexity of the final solution by taking care of most of the business logic around error management
+      - Could be the starting point for a document store
     links:
-      - "[Usage](USAGE.md)"
+      - "[SCHEMA](SCHEMA.md)"
+    related:
+      - "[Command-query separation (CQS) principle ](https://en.wikipedia.org/wiki/Command%E2%80%93query_separation)"
+    tags:
+      - image-hero
   github:
     account: flarebyte
     name: lunar-diamond-engraving
