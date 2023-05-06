@@ -92,22 +92,22 @@ export const runValidation = async (
       object: mask.opts,
       engravingInput: mask,
     }),
-    headers: await saferValidate(validate.opts, {
+    headers: await saferValidate(validate.headers, {
       target: 'headers',
       object: mask.headers,
       engravingInput: mask,
     }),
-    parameters: await saferValidate(validate.opts, {
+    parameters: await saferValidate(validate.parameters, {
       target: 'parameters',
       object: mask.parameters,
       engravingInput: mask,
     }),
-    payload: await saferValidate(validate.opts, {
+    payload: await saferValidate(validate.payload, {
       target: 'payload',
       object: mask.payload,
       engravingInput: mask,
     }),
-    context: await saferValidate(validate.opts, {
+    context: await saferValidate(validate.context, {
       target: 'context',
       object: mask.context,
       engravingInput: mask,

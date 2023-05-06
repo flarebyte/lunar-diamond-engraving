@@ -1,8 +1,50 @@
 import {
   EngravingMask,
-  EngravingChisel
+  EngravingChisel,
+  EngravingValidationFunction,
+  EngravingValidationOpts,
+  EngravingValidationSuccess,
+  EngravingValidationError,
 } from './api-model.js';
+import { createValidationError } from './create-error.js';
 import { SingleEngravingModel } from './engraving-model.js';
+import { Result, willFail } from './railway.js';
+import { orderOfMagnitude } from './utility.js';
+
+const saferShield = async (
+  decorated: EngravingValidationFunction,
+  value: EngravingValidationOpts
+): Promise<Result<EngravingValidationSuccess, EngravingValidationError>> => {
+  const started = Date.now();
+  try {
+    const result = await decorated(value);
+    return result;
+  } catch (error) {
+    const finished = Date.now();
+    if (error instanceof Error) {
+      const { message } = error;
+      return willFail(
+        createValidationError({
+          target: value.target,
+          mask: value.engravingInput,
+          durationMagnitude: orderOfMagnitude(started, finished),
+          message,
+          exitOnFailure: true,
+        })
+      );
+    }
+
+    return willFail(
+      createValidationError({
+        target: value.target,
+        mask: value.engravingInput,
+        durationMagnitude: orderOfMagnitude(started, finished),
+        message: '(229728) shield default error',
+        exitOnFailure: true,
+      })
+    );
+  }
+};
 
 /** Run shield converting any exception to a failure result */
 export const runShield = async (
@@ -45,44 +87,49 @@ export const runShield = async (
   }
 
   const results = {
-    opts: await shieldfunc.opts({
+    opts: await saferShield(shieldfunc.opts, {
       target: 'opts',
       object: mask.opts,
       engravingInput: mask,
     }),
-    headers: await shieldfunc.opts({
+    headers: await saferShield(shieldfunc.headers, {
       target: 'headers',
       object: mask.headers,
       engravingInput: mask,
     }),
-    parameters: await shieldfunc.opts({
+    parameters: await saferShield(shieldfunc.parameters, {
       target: 'parameters',
       object: mask.parameters,
       engravingInput: mask,
     }),
-    payload: await shieldfunc.opts({
+    payload: await saferShield(shieldfunc.payload, {
       target: 'payload',
       object: mask.payload,
       engravingInput: mask,
     }),
-    context: await shieldfunc.opts({
+    context: await saferShield(shieldfunc.context, {
       target: 'context',
       object: mask.context,
       engravingInput: mask,
     }),
   };
 
-  const isSuccess = results.opts.status === 'success' &&
+  const isSuccess =
+    results.opts.status === 'success' &&
     results.headers.status === 'success' &&
     results.parameters.status === 'success' &&
     results.payload.status === 'success' &&
     results.context.status === 'success';
   const err = {
     opts: results.opts.status === 'failure' ? [results.opts.error] : [],
-    headers: results.headers.status === 'failure' ? [results.headers.error] : [],
-    parameters: results.parameters.status === 'failure' ? [results.parameters.error] : [],
-    payload: results.payload.status === 'failure' ? [results.payload.error] : [],
-    context: results.context.status === 'failure' ? [results.context.error] : [],
+    headers:
+      results.headers.status === 'failure' ? [results.headers.error] : [],
+    parameters:
+      results.parameters.status === 'failure' ? [results.parameters.error] : [],
+    payload:
+      results.payload.status === 'failure' ? [results.payload.error] : [],
+    context:
+      results.context.status === 'failure' ? [results.context.error] : [],
   };
   const errors = [
     ...err.opts,
