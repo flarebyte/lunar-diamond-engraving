@@ -67,9 +67,16 @@ export const runEngraving = async ({
   );
 
   const settledActionResults = await Promise.allSettled(actionPromises);
-  // const hasRejected = settledActionResults.some(
-  //   (res) => res.status === 'rejected'
-  // );
+  const hasSomeRejectedAction = settledActionResults.some(
+    (res) => res.status === 'rejected'
+  );
+
+  if (hasSomeRejectedAction) {
+    await logger({
+      engravingInput: mask,
+      level: 'action/rejected',
+    });
+  }
   const actionResults = settledActionResults
     .filter(isFulfilled)
     .map((res) => res.value);
@@ -90,5 +97,21 @@ export const runEngraving = async ({
     }
   }
 
-  await runOnFinish(onFinish, actionResults, mask, chisel);
+  const onFinishResult = await runOnFinish(
+    onFinish,
+    actionResults,
+    mask,
+    chisel
+  );
+  if (onFinishResult.status === 'success') {
+    await logger({
+      engravingInput: mask,
+      level: 'onFinish/success',
+    });
+  } else {
+    await logger({
+      engravingInput: mask,
+      level: 'onFinish/error',
+    });
+  }
 };
