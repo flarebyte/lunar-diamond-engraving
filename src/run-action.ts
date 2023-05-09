@@ -13,12 +13,17 @@ import { createActionError } from './create-error.js';
 /**
  * Run an action converting any exception to a failure result
  */
-export const runAction = async (
-  name: string,
-  action: ActionModel,
-  mask: EngravingMask,
-  chisel: EngravingChisel
-): Promise<Result<EngravingActionResult, EngravingActionResult>> => {
+export const runAction = async ({
+  name,
+  action,
+  mask,
+  chisel,
+}: {
+  name: string;
+  action: ActionModel;
+  mask: EngravingMask;
+  chisel: EngravingChisel;
+}): Promise<Result<EngravingActionResult, EngravingActionResult>> => {
   const started = Date.now();
   try {
     const uses = getUses(chisel, action.uses);

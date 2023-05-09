@@ -61,9 +61,9 @@ export type EngravingLoggerOpts =
       engravingInput: EngravingMask;
     }
   | {
-      level: 'action/error';
+      level: 'action/success' | 'action/error';
       engravingInput: EngravingMask;
-      actionErrors: EngravingActionResult[];
+      actionResult: EngravingActionResult;
     };
 
 /** Common fields for most results */

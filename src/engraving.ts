@@ -24,12 +24,12 @@ export const runEngraving = async ({
 
   const validationResult = await runValidation(validation, mask, chisel);
   if (validationResult.isSuccess) {
-    logger({
+    await logger({
       engravingInput: mask,
       level: 'validation/success',
     });
   } else {
-    logger({
+    await logger({
       engravingInput: mask,
       level: 'validation/error',
       errors: validationResult.errors,
@@ -41,12 +41,12 @@ export const runEngraving = async ({
 
   const shieldResult = await runShield(shield, mask, chisel);
   if (shieldResult.isSuccess) {
-    logger({
+    await logger({
       engravingInput: mask,
       level: 'shield/success',
     });
   } else {
-    logger({
+    await logger({
       engravingInput: mask,
       level: 'shield/error',
       errors: validationResult.errors,
@@ -58,7 +58,12 @@ export const runEngraving = async ({
 
   /** Should we run all of these in parallel */
   const actionPromises = Object.entries(actions).map((actionKeyvalue) =>
-    runAction(actionKeyvalue[0], actionKeyvalue[1], mask, chisel)
+    runAction({
+      name: actionKeyvalue[0],
+      action: actionKeyvalue[1],
+      mask,
+      chisel,
+    })
   );
 
   const settledActionResults = await Promise.allSettled(actionPromises);
@@ -68,6 +73,22 @@ export const runEngraving = async ({
   const actionResults = settledActionResults
     .filter(isFulfilled)
     .map((res) => res.value);
+
+  for (const actionResult of actionResults) {
+    if (actionResult.status === 'success') {
+      await logger({
+        engravingInput: mask,
+        level: 'action/success',
+        actionResult: actionResult.value,
+      });
+    } else {
+      await logger({
+        engravingInput: mask,
+        level: 'action/error',
+        actionResult: actionResult.error,
+      });
+    }
+  }
 
   await runOnFinish(onFinish, actionResults, mask, chisel);
 };
