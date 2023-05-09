@@ -132,6 +132,18 @@ export const runValidation = async (
     context:
       results.context.status === 'failure' ? [results.context.error] : [],
   };
+
+  const exitOnFailure =
+    (results.opts.status === 'failure' && results.opts.error.exitOnFailure) ||
+    (results.headers.status === 'failure' &&
+      results.headers.error.exitOnFailure) ||
+    (results.parameters.status === 'failure' &&
+      results.parameters.error.exitOnFailure) ||
+    (results.payload.status === 'failure' &&
+      results.payload.error.exitOnFailure) ||
+    (results.context.status === 'failure' &&
+      results.context.error.exitOnFailure);
+
   const errors = [
     ...err.opts,
     ...err.headers,
@@ -139,5 +151,5 @@ export const runValidation = async (
     ...err.payload,
     ...err.context,
   ];
-  return { isSuccess, ...results, errors };
+  return { isSuccess, exitOnFailure, ...results, errors };
 };

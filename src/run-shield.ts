@@ -139,5 +139,16 @@ export const runShield = async (
     ...err.context,
   ];
 
-  return { isSuccess, ...results, errors };
+  const exitOnFailure =
+    (results.opts.status === 'failure' && results.opts.error.exitOnFailure) ||
+    (results.headers.status === 'failure' &&
+      results.headers.error.exitOnFailure) ||
+    (results.parameters.status === 'failure' &&
+      results.parameters.error.exitOnFailure) ||
+    (results.payload.status === 'failure' &&
+      results.payload.error.exitOnFailure) ||
+    (results.context.status === 'failure' &&
+      results.context.error.exitOnFailure);
+
+  return { isSuccess, exitOnFailure, ...results, errors };
 };

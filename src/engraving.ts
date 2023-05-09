@@ -34,7 +34,9 @@ export const runEngraving = async ({
       level: 'validation/error',
       errors: validationResult.errors,
     });
-    return;
+    if (validationResult.exitOnFailure) {
+      return;
+    }
   }
 
   const shieldResult = await runShield(shield, mask, chisel);
@@ -49,6 +51,9 @@ export const runEngraving = async ({
       level: 'shield/error',
       errors: validationResult.errors,
     });
+    if (shieldResult.exitOnFailure) {
+      return;
+    }
   }
 
   /** Should we run all of these in parallel */
