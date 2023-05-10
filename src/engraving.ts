@@ -10,141 +10,141 @@ import {createEngravingMessage} from './create-message.js';
 
 /** Run the engraving with a mask (input) and a chisel (tooling) */
 export const runEngraving = async ({
-	mask,
-	chisel,
+  mask,
+  chisel,
 }: RunEngravingOpts): Promise<
-Result<RunEngravingResult, RunEngravingResult>
+  Result<RunEngravingResult, RunEngravingResult>
 > => {
-	const engraving = chisel.model.engravings[mask.name];
-	if (engraving === undefined) {
-		throw new Error(`${mask.name} is not available as an engraving (292272)`);
-	}
+  const engraving = chisel.model.engravings[mask.name];
+  if (engraving === undefined) {
+    throw new Error(`${mask.name} is not available as an engraving (292272)`);
+  }
 
-	const defaultEngravingResult: RunEngravingResult = {
-		txId: mask.txId,
-		engraving: mask.name,
-		messages: [],
-	};
-	const logger = getLogger(chisel, engraving.logger);
+  const defaultEngravingResult: RunEngravingResult = {
+    txId: mask.txId,
+    engraving: mask.name,
+    messages: [],
+  };
+  const logger = getLogger(chisel, engraving.logger);
 
-	const {validation, shield, actions, onFinish} = engraving.phases;
+  const {validation, shield, actions, onFinish} = engraving.phases;
 
-	const validationResult = await runValidation(validation, mask, chisel);
-	if (validationResult.isSuccess) {
-		await logger({
-			engravingInput: mask,
-			level: 'validation/success',
-		});
-	} else {
-		await logger({
-			engravingInput: mask,
-			level: 'validation/error',
-			errors: validationResult.errors,
-		});
-		if (validationResult.exitOnFailure) {
-			return {
-				status: 'failure',
-				error: {
-					...defaultEngravingResult,
-					messages: [createEngravingMessage('framework', 'Validation failed')],
-				},
-			};
-		}
-	}
+  const validationResult = await runValidation(validation, mask, chisel);
+  if (validationResult.isSuccess) {
+    await logger({
+      engravingInput: mask,
+      level: 'validation/success',
+    });
+  } else {
+    await logger({
+      engravingInput: mask,
+      level: 'validation/error',
+      errors: validationResult.errors,
+    });
+    if (validationResult.exitOnFailure) {
+      return {
+        status: 'failure',
+        error: {
+          ...defaultEngravingResult,
+          messages: [createEngravingMessage('framework', 'Validation failed')],
+        },
+      };
+    }
+  }
 
-	const shieldResult = await runShield(shield, mask, chisel);
-	if (shieldResult.isSuccess) {
-		await logger({
-			engravingInput: mask,
-			level: 'shield/success',
-		});
-	} else {
-		await logger({
-			engravingInput: mask,
-			level: 'shield/error',
-			errors: validationResult.errors,
-		});
-		if (shieldResult.exitOnFailure) {
-			return {
-				status: 'failure',
-				error: {
-					...defaultEngravingResult,
-					messages: [createEngravingMessage('framework', 'Shield failed')],
-				},
-			};
-		}
-	}
+  const shieldResult = await runShield(shield, mask, chisel);
+  if (shieldResult.isSuccess) {
+    await logger({
+      engravingInput: mask,
+      level: 'shield/success',
+    });
+  } else {
+    await logger({
+      engravingInput: mask,
+      level: 'shield/error',
+      errors: validationResult.errors,
+    });
+    if (shieldResult.exitOnFailure) {
+      return {
+        status: 'failure',
+        error: {
+          ...defaultEngravingResult,
+          messages: [createEngravingMessage('framework', 'Shield failed')],
+        },
+      };
+    }
+  }
 
-	/** Should we run all of these in parallel */
-	const actionPromises = Object.entries(actions).map(async actionKeyvalue =>
-		runAction({
-			name: actionKeyvalue[0],
-			action: actionKeyvalue[1],
-			mask,
-			chisel,
-		}),
-	);
+  /** Should we run all of these in parallel */
+  const actionPromises = Object.entries(actions).map(async (actionKeyvalue) =>
+    runAction({
+      name: actionKeyvalue[0],
+      action: actionKeyvalue[1],
+      mask,
+      chisel,
+    })
+  );
 
-	const settledActionResults = await Promise.allSettled(actionPromises);
-	const hasSomeRejectedAction = settledActionResults.some(
-		res => res.status === 'rejected',
-	);
+  const settledActionResults = await Promise.allSettled(actionPromises);
+  const hasSomeRejectedAction = settledActionResults.some(
+    (res) => res.status === 'rejected'
+  );
 
-	if (hasSomeRejectedAction) {
-		await logger({
-			engravingInput: mask,
-			level: 'action/rejected',
-		});
-	}
+  if (hasSomeRejectedAction) {
+    await logger({
+      engravingInput: mask,
+      level: 'action/rejected',
+    });
+  }
 
-	const actionResults = settledActionResults
-		.filter(isFulfilled)
-		.map(res => res.value);
+  const actionResults = settledActionResults
+    .filter(isFulfilled)
+    .map((res) => res.value);
 
-	for (const actionResult of actionResults) {
-		if (actionResult.status === 'success') {
-			await logger({
-				engravingInput: mask,
-				level: 'action/success',
-				actionResult: actionResult.value,
-			});
-		} else {
-			await logger({
-				engravingInput: mask,
-				level: 'action/error',
-				actionResult: actionResult.error,
-			});
-		}
-	}
+  for (const actionResult of actionResults) {
+    if (actionResult.status === 'success') {
+      await logger({
+        engravingInput: mask,
+        level: 'action/success',
+        actionResult: actionResult.value,
+      });
+    } else {
+      await logger({
+        engravingInput: mask,
+        level: 'action/error',
+        actionResult: actionResult.error,
+      });
+    }
+  }
 
-	const onFinishResult = await runOnFinish(
-		onFinish,
-		actionResults,
-		mask,
-		chisel,
-	);
-	if (onFinishResult.status === 'success') {
-		await logger({
-			engravingInput: mask,
-			level: 'onFinish/success',
-		});
-		return {
-			status: 'success',
-			value: {...defaultEngravingResult},
-		};
-	}
+  const onFinishResult = await runOnFinish(
+    onFinish,
+    actionResults,
+    mask,
+    chisel
+  );
+  if (onFinishResult.status === 'success') {
+    await logger({
+      engravingInput: mask,
+      level: 'onFinish/success',
+    });
+    return {
+      status: 'success',
+      value: {...defaultEngravingResult},
+    };
+  }
 
-	await logger({
-		engravingInput: mask,
-		level: 'onFinish/error',
-	});
-	return {
-		status: 'failure',
-		error: {
-			...defaultEngravingResult,
-			messages: [
-				createEngravingMessage('framework', 'At least one action has failed'),
-			],
-		},
-	};
+  await logger({
+    engravingInput: mask,
+    level: 'onFinish/error',
+  });
+  return {
+    status: 'failure',
+    error: {
+      ...defaultEngravingResult,
+      messages: [
+        createEngravingMessage('framework', 'At least one action has failed'),
+      ],
+    },
+  };
 };
