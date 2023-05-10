@@ -6,7 +6,7 @@ import { runAction } from './run-action.js';
 import { runOnFinish } from './run-on-finish.js';
 import { runShield } from './run-shield.js';
 import { Result } from './railway.js';
-import { createMessage } from './create-message.js';
+import { createEngravingMessage } from './create-message.js';
 
 /** Run the engraving with a mask (input) and a chisel (tooling) */
 export const runEngraving = async ({
@@ -45,7 +45,7 @@ export const runEngraving = async ({
         status: 'failure',
         error: {
           ...defaultEngravingResult,
-          messages: [createMessage('framework', 'Validation failed')],
+          messages: [createEngravingMessage('framework', 'Validation failed')],
         },
       };
     }
@@ -68,7 +68,7 @@ export const runEngraving = async ({
         status: 'failure',
         error: {
           ...defaultEngravingResult,
-          messages: [createMessage('framework', 'Shield failed')],
+          messages: [createEngravingMessage('framework', 'Shield failed')],
         },
       };
     }
@@ -140,7 +140,7 @@ export const runEngraving = async ({
       error: {
         ...defaultEngravingResult,
         messages: [
-          createMessage('framework', 'At least one action has failed'),
+          createEngravingMessage('framework', 'At least one action has failed'),
         ],
       },
     };

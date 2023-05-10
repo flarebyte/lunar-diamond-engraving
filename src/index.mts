@@ -1,15 +1,21 @@
-import { EngravingModel } from './engraving-model.js';
 import {
-  EngravingMask,
-  EngravingValidationFunction,
   EngravingActionFunction,
+  EngravingActionResult,
   EngravingLoggerFunction,
-  EngravingOnFinishFunction,
-  EngravingValidationOpts,
   EngravingLoggerOpts,
+  EngravingMask,
+  EngravingOnFinishFunction,
   EngravingOnFinishOpts,
+  EngravingOnFinishResult,
+  EngravingValidationError,
+  EngravingValidationFunction,
+  EngravingValidationOpts,
+  EngravingValidationSuccess,
 } from './api-model.js';
-import { createMessage } from './create-message.js';
+import { EngravingChiselBuilder } from './chisel-factory.js';
+import { createEngravingMessage } from './create-message.js';
+import { EngravingModel } from './engraving-model.js';
+import { runEngraving } from './engraving.js';
 
 export type {
   EngravingMask,
@@ -21,6 +27,11 @@ export type {
   EngravingValidationOpts,
   EngravingLoggerOpts,
   EngravingOnFinishOpts,
+  EngravingActionResult,
+  EngravingValidationError,
+  EngravingValidationSuccess,
+  EngravingOnFinishResult,
 };
+export { createEngravingMessage, EngravingChiselBuilder, runEngraving };
 
-export {createMessage}
+

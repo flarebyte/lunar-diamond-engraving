@@ -1,21 +1,19 @@
 import {
-  EngravingValidationFunction,
-  EngravingActionResult,
-  EngravingValidationError,
-  EngravingValidationSuccess,
   EngravingActionFunction,
-  EngravingOnFinishResult,
-  EngravingOnFinishFunction,
-} from '../src/api-model.js';
-import { EngravingChiselBuilder } from '../src/chisel-factory.js';
-import {
+  EngravingActionResult,
+  EngravingChiselBuilder,
   EngravingLoggerFunction,
+  EngravingLoggerOpts,
   EngravingMask,
   EngravingModel,
-  EngravingValidationOpts,
+  EngravingOnFinishFunction,
   EngravingOnFinishOpts,
-  EngravingLoggerOpts,
-  createMessage,
+  EngravingOnFinishResult,
+  EngravingValidationError,
+  EngravingValidationFunction,
+  EngravingValidationOpts,
+  EngravingValidationSuccess,
+  createEngravingMessage,
 } from '../src/index.mjs';
 
 const contactModel: EngravingModel = {
@@ -81,7 +79,7 @@ const validateContact: EngravingValidationFunction = (
     engraving: opts.engravingInput.name,
     target: opts.target,
     metadata: { city: 'London' },
-    messages: [createMessage('green', 'Validation fails')],
+    messages: [createEngravingMessage('green', 'Validation fails')],
     durationMagnitude: 2,
     validated: opts.object,
   };
@@ -96,9 +94,27 @@ const validateContactFail: EngravingValidationFunction = (
     engraving: opts.engravingInput.name,
     target: opts.target,
     metadata: { city: 'London' },
-    messages: [createMessage('green', 'Validation fails')],
+    messages: [createEngravingMessage('green', 'Validation fails')],
     durationMagnitude: 2,
     exitOnFailure: true,
+  };
+  return Promise.resolve({
+    status: 'failure',
+    error,
+  });
+};
+
+const shieldContactFail: EngravingValidationFunction = (
+  opts: EngravingValidationOpts
+) => {
+  const error: EngravingValidationError = {
+    txId: opts.engravingInput.txId,
+    engraving: opts.engravingInput.name,
+    target: opts.target,
+    metadata: { city: 'London' },
+    messages: [createEngravingMessage('green', 'Validation fails')],
+    durationMagnitude: 2,
+    exitOnFailure: false,
   };
   return Promise.resolve({
     status: 'failure',
@@ -128,7 +144,7 @@ const contactWorkFail: EngravingActionFunction = (mask: EngravingMask) => {
     engraving: mask.name,
     action: 'contactWorkFail',
     metadata: { account: '98' },
-    messages: [createMessage('indigo', 'contact work fail')],
+    messages: [createEngravingMessage('indigo', 'contact work fail')],
     durationMagnitude: 2,
   };
   return Promise.resolve({
@@ -150,12 +166,36 @@ const contactFinish: EngravingOnFinishFunction = (
   return Promise.resolve({ status: 'success', value });
 };
 
-export const createFixtureChisel = ({ modelId }: { modelId: 'contact' }) => {
+const contactFinishfail: EngravingOnFinishFunction = (
+  opts: EngravingOnFinishOpts
+) => {
+  const error: EngravingOnFinishResult = {
+    txId: opts.engravingInput.txId,
+    engraving: opts.engravingInput.name,
+    metadata: {},
+    durationMagnitude: 2,
+    messages: [],
+  };
+  return Promise.resolve({ status: 'failure', error });
+};
+
+export const createFixtureChisel = ({
+  modelId,
+  triggerFail,
+}: {
+  modelId: 'contact';
+  triggerFail: (
+    | 'validation-payload'
+    | 'contact-address'
+    | 'shield-parameters'
+    | 'shield-context'
+    | 'on-finish-ready'
+  )[];
+}) => {
   const builder = new EngravingChiselBuilder();
   builder.parseModel(engravingModelFixtures[modelId]);
 
   builder.addLoggerFunction('logger:fake/log', contactLogger);
-  builder.addLoggerFunction('logger:fake/log2', contactLogger);
 
   builder.addValidationFunction('validation:contact/opts', validateContact);
   builder.addValidationFunction('validation:contact/headers', validateContact);
@@ -163,7 +203,17 @@ export const createFixtureChisel = ({ modelId }: { modelId: 'contact' }) => {
     'validation:contact/parameters',
     validateContact
   );
-  builder.addValidationFunction('validation:contact/payload', validateContact);
+  if (triggerFail.includes('validation-payload')) {
+    builder.addValidationFunction(
+      'validation:contact/payload',
+      validateContactFail
+    );
+  } else {
+    builder.addValidationFunction(
+      'validation:contact/payload',
+      validateContact
+    );
+  }
   builder.addValidationFunction(
     'validation:contact/payload/fail',
     validateContactFail
@@ -172,15 +222,29 @@ export const createFixtureChisel = ({ modelId }: { modelId: 'contact' }) => {
 
   builder.addShieldFunction('shield:contact/opts', validateContact);
   builder.addShieldFunction('shield:contact/headers', validateContact);
-  builder.addShieldFunction('shield:contact/parameters', validateContact);
+  if (triggerFail.includes('shield-parameters')) {
+    builder.addShieldFunction('shield:contact/parameters', validateContact);
+  } else {
+    builder.addShieldFunction('shield:contact/parameters', shieldContactFail);
+  }
   builder.addShieldFunction('shield:contact/payload', validateContact);
-  builder.addShieldFunction('shield:contact/context', validateContact);
+  if (triggerFail.includes('shield-context')) {
+    builder.addShieldFunction('shield:contact/context', validateContactFail);
+  } else {
+    builder.addShieldFunction('shield:contact/context', validateContact);
+  }
+  if (triggerFail.includes('contact-address')) {
+    builder.addActionFunction('work:s3/contact-address', contactWorkFail);
+  } else {
+    builder.addActionFunction('work:s3/contact-address', contactWork);
+  }
 
-  builder.addActionFunction('work:s3/contact-address', contactWork);
-  builder.addActionFunction('work:s3/contact-address/fail', contactWorkFail);
   builder.addActionFunction('work:s3/historical-contact-address', contactWork);
-
-  builder.addOnFinishFunction('finish:sns/contact-ready', contactFinish);
+  if (triggerFail.includes('on-finish-ready')) {
+    builder.addOnFinishFunction('finish:sns/contact-ready', contactFinishfail);
+  } else {
+    builder.addOnFinishFunction('finish:sns/contact-ready', contactFinish);
+  }
 
   return builder;
 };
