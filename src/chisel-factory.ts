@@ -5,7 +5,7 @@ import {
   type EngravingLoggerFunction,
   type EngravingValidationFunction,
 } from './api-model.js';
-import {type EngravingModel, safeParseBuild} from './engraving-model.js';
+import { EngravingModel, safeParseBuild } from './engraving-model.js';
 
 /** List usage of the references to function */
 type EngravingReferenceCheck = {
@@ -161,17 +161,13 @@ export class EngravingChiselBuilder {
     const unsortedUsed: string[] = [];
     for (const engraving of Object.values(this.model.engravings)) {
       unsortedUsed.push(...extractCommons(engraving));
-      unsortedUsed.push(
-        ...createKeyRefsForValidation(engraving.phases.validation.check)
-      );
-      unsortedUsed.push(
-        ...createKeyRefsForValidation(engraving.phases.shield.check)
-      );
-
-      unsortedUsed.push(
+      const unsortedRefs = [
+        ...createKeyRefsForValidation(engraving.phases.validation.check),
+        ...createKeyRefsForValidation(engraving.phases.shield.check),
         ...Object.values(engraving.phases.actions).map((action) => action.uses),
-        engraving.phases.onFinish.uses
-      );
+        engraving.phases.onFinish.uses,
+      ];
+      unsortedUsed.push(...unsortedRefs);
     }
 
     const used = unsortedUsed.filter(byUniqueName).sort();
