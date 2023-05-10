@@ -15,6 +15,7 @@ import {
   EngravingValidationOpts,
   EngravingOnFinishOpts,
   EngravingLoggerOpts,
+  createMessage,
 } from '../src/index.mjs';
 
 const contactModel: EngravingModel = {
@@ -80,7 +81,7 @@ const validateContact: EngravingValidationFunction = (
     engraving: opts.engravingInput.name,
     target: opts.target,
     metadata: { city: 'London' },
-    messages: ['Validation fails'],
+    messages: [createMessage('green', 'Validation fails')],
     durationMagnitude: 2,
     validated: opts.object,
   };
@@ -95,7 +96,7 @@ const validateContactFail: EngravingValidationFunction = (
     engraving: opts.engravingInput.name,
     target: opts.target,
     metadata: { city: 'London' },
-    messages: ['Validation fails'],
+    messages: [createMessage('green', 'Validation fails')],
     durationMagnitude: 2,
     exitOnFailure: true,
   };
@@ -127,7 +128,7 @@ const contactWorkFail: EngravingActionFunction = (mask: EngravingMask) => {
     engraving: mask.name,
     action: 'contactWorkFail',
     metadata: { account: '98' },
-    messages: ['contact work fail'],
+    messages: [createMessage('indigo', 'contact work fail')],
     durationMagnitude: 2,
   };
   return Promise.resolve({

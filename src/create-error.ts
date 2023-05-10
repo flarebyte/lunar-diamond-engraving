@@ -5,6 +5,7 @@ import {
   EngravingValidationError,
   EngravingValidationTarget,
 } from './api-model.js';
+import { createMessage } from './create-message.js';
 
 export const createActionError = ({
   name,
@@ -22,7 +23,7 @@ export const createActionError = ({
   durationMagnitude,
   action: name,
   metadata: {},
-  messages: [message],
+  messages: [createMessage('framework', message)],
 });
 
 export const createFinishError = ({
@@ -38,7 +39,7 @@ export const createFinishError = ({
   engraving: mask.name,
   durationMagnitude,
   metadata: {},
-  messages: [message],
+  messages: [createMessage('framework', message)],
 });
 
 export const createValidationError = ({
@@ -59,6 +60,6 @@ export const createValidationError = ({
   target: target,
   durationMagnitude,
   metadata: {},
-  messages: [message],
+  messages: [createMessage('framework', message)],
   exitOnFailure,
 });

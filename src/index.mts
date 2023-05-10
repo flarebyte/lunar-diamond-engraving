@@ -9,6 +9,7 @@ import {
   EngravingLoggerOpts,
   EngravingOnFinishOpts,
 } from './api-model.js';
+import { createMessage } from './create-message.js';
 
 export type {
   EngravingMask,
@@ -21,3 +22,5 @@ export type {
   EngravingLoggerOpts,
   EngravingOnFinishOpts,
 };
+
+export {createMessage}

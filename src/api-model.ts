@@ -85,6 +85,20 @@ export interface RunEngravingOpts {
   chisel: EngravingChisel;
 }
 
+export interface EngravingMessage {
+  category:
+    | 'framework'
+    | 'red'
+    | 'orange'
+    | 'yellow'
+    | 'green'
+    | 'blue'
+    | 'indigo'
+    | 'violet'
+    | 'pink';
+  message: string;
+}
+
 /** Common fields for most results */
 interface BaseResult {
   /** A log transactionId that we could pass along (ex: AWS X-RAY) */
@@ -100,7 +114,7 @@ interface BaseResult {
   durationMagnitude: number;
 
   /** A list of log messages */
-  messages: string[];
+  messages: EngravingMessage[];
 }
 
 /** An error result resulting from a failed validation */
@@ -148,7 +162,7 @@ export interface RunEngravingResult {
   engraving: string;
 
   /** A list of log messages */
-  messages: string[];
+  messages: EngravingMessage[];
 }
 
 /** Type for a validation function */
