@@ -1,5 +1,5 @@
-import { EngravingModel } from './engraving-model.js';
-import { Result } from './railway.js';
+import {type EngravingModel} from './engraving-model.js';
+import {type Result} from './railway.js';
 
 export type EngravingValidationTarget =
   | 'opts'
@@ -9,42 +9,42 @@ export type EngravingValidationTarget =
   | 'context';
 
 /** The incoming input to write */
-export interface EngravingMask {
-  /** the name of the engraving (the key in the record) */
-  name: string;
+export type EngravingMask = {
+	/** The name of the engraving (the key in the record) */
+	name: string;
 
-  /** A log transactionId that we could pass along (ex: AWS X-RAY) */
-  txId: string;
+	/** A log transactionId that we could pass along (ex: AWS X-RAY) */
+	txId: string;
 
-  /** A list of options that we wish to pass to the engraving function */
-  opts: object;
+	/** A list of options that we wish to pass to the engraving function */
+	opts: Record<string, unknown>;
 
-  /** A list of (usually http) headers that may be relevant*/
-  headers: object;
+	/** A list of (usually http) headers that may be relevant */
+	headers: Record<string, unknown>;
 
-  /** A list of (usually http query) parameters that we would expect*/
-  parameters: object;
+	/** A list of (usually http query) parameters that we would expect */
+	parameters: Record<string, unknown>;
 
-  /** The JSON payload*/
-  payload: object;
+	/** The JSON payload */
+	payload: Record<string, unknown>;
 
-  /** An additional context that is usually calculated on the server  */
-  context: object;
-}
+	/** An additional context that is usually calculated on the server  */
+	context: Record<string, unknown>;
+};
 
 /**
  * Options for the validation function
  */
-export interface EngravingValidationOpts {
-  /** The specific field in EngravingMask we are targetting*/
-  target: EngravingValidationTarget;
+export type EngravingValidationOpts = {
+	/** The specific field in EngravingMask we are targetting */
+	target: EngravingValidationTarget;
 
-  /** The JSON object */
-  object: object;
+	/** The JSON object */
+	object: Record<string, unknown>;
 
-  /**  The input (or mask) for the engraving process. In other words the incoming payload*/
-  engravingInput: EngravingMask;
-}
+	/**  The input (or mask) for the engraving process. In other words the incoming payload */
+	engravingInput: EngravingMask;
+};
 
 /**
  * Options for the logger function.
@@ -52,154 +52,154 @@ export interface EngravingValidationOpts {
  */
 export type EngravingLoggerOpts =
   | {
-      level: 'validation/error' | 'shield/error';
-      engravingInput: EngravingMask;
-      errors: EngravingValidationError[];
-    }
+  	level: 'validation/error' | 'shield/error';
+  	engravingInput: EngravingMask;
+  	errors: EngravingValidationError[];
+  }
   | {
-      level: 'validation/success' | 'shield/success';
-      engravingInput: EngravingMask;
-    }
+  	level: 'validation/success' | 'shield/success';
+  	engravingInput: EngravingMask;
+  }
   | {
-      level: 'action/success' | 'action/error';
-      engravingInput: EngravingMask;
-      actionResult: EngravingActionResult;
-    }
+  	level: 'action/success' | 'action/error';
+  	engravingInput: EngravingMask;
+  	actionResult: EngravingActionResult;
+  }
   | {
-      level: 'action/rejected';
-      engravingInput: EngravingMask;
-    }
+  	level: 'action/rejected';
+  	engravingInput: EngravingMask;
+  }
   | {
-      level: 'onFinish/success' | 'onFinish/error';
-      engravingInput: EngravingMask;
-    };
+  	level: 'onFinish/success' | 'onFinish/error';
+  	engravingInput: EngravingMask;
+  };
 
 /**
  * Options for the run engraving function
  */
-export interface RunEngravingOpts {
-  /**  The mask (or input) for the engraving process. In other words the incoming payload*/
-  mask: EngravingMask;
+export type RunEngravingOpts = {
+	/**  The mask (or input) for the engraving process. In other words the incoming payload */
+	mask: EngravingMask;
 
-  /** The tools (chisel) that are used alongside the model */
-  chisel: EngravingChisel;
-}
+	/** The tools (chisel) that are used alongside the model */
+	chisel: EngravingChisel;
+};
 
-export interface EngravingMessage {
-  category:
-    | 'framework'
-    | 'red'
-    | 'orange'
-    | 'yellow'
-    | 'green'
-    | 'blue'
-    | 'indigo'
-    | 'violet'
-    | 'pink';
-  message: string;
-}
+export type EngravingMessage = {
+	category:
+	| 'framework'
+	| 'red'
+	| 'orange'
+	| 'yellow'
+	| 'green'
+	| 'blue'
+	| 'indigo'
+	| 'violet'
+	| 'pink';
+	message: string;
+};
 
 /** Common fields for most results */
-interface BaseResult {
-  /** A log transactionId that we could pass along (ex: AWS X-RAY) */
-  txId: string;
+type BaseResult = {
+	/** A log transactionId that we could pass along (ex: AWS X-RAY) */
+	txId: string;
 
-  /** the name of the engraving (the key in the record) */
-  engraving: string;
+	/** The name of the engraving (the key in the record) */
+	engraving: string;
 
-  /** Some custom metadata that we may be relevant */
-  metadata: { [key: string]: string };
+	/** Some custom metadata that we may be relevant */
+	metadata: Record<string, string>;
 
-  /** The order of magnitude for the time duration of the function */
-  durationMagnitude: number;
+	/** The order of magnitude for the time duration of the function */
+	durationMagnitude: number;
 
-  /** A list of log messages */
-  messages: EngravingMessage[];
-}
+	/** A list of log messages */
+	messages: EngravingMessage[];
+};
 
 /** An error result resulting from a failed validation */
-export interface EngravingValidationError extends BaseResult {
-  /** The specific field in EngravingMask we are targetting*/
-  target: EngravingValidationTarget;
+export type EngravingValidationError = {
+	/** The specific field in EngravingMask we are targetting */
+	target: EngravingValidationTarget;
 
-  /** This flag should be set to true if we want to interrupt the engraving if the validation fails */
-  exitOnFailure: boolean;
-}
+	/** This flag should be set to true if we want to interrupt the engraving if the validation fails */
+	exitOnFailure: boolean;
+} & BaseResult;
 
 /** An success result resulting from a successful validation */
-export interface EngravingValidationSuccess extends BaseResult {
-  /** The specific field in EngravingMask we are targetting*/
-  target: EngravingValidationTarget;
+export type EngravingValidationSuccess = {
+	/** The specific field in EngravingMask we are targetting */
+	target: EngravingValidationTarget;
 
-  /** The sanitized input */
-  validated: object;
-}
+	/** The sanitized input */
+	validated: Record<string, unknown>;
+} & BaseResult;
 
-/** The result from  action function*/
-export interface EngravingActionResult extends BaseResult {
-  /** The name of the action */
-  action: string;
-}
+/** The result from  action function */
+export type EngravingActionResult = {
+	/** The name of the action */
+	action: string;
+} & BaseResult;
 
 /** The options for the onFinish function */
-export interface EngravingOnFinishOpts {
-  /**  The input (or mask) for the engraving process. In other words the incoming payload*/
-  engravingInput: EngravingMask;
+export type EngravingOnFinishOpts = {
+	/**  The input (or mask) for the engraving process. In other words the incoming payload */
+	engravingInput: EngravingMask;
 
-  /** The results of all the actions */
-  actionResults: Result<EngravingActionResult, EngravingActionResult>[];
-}
+	/** The results of all the actions */
+	actionResults: Array<Result<EngravingActionResult, EngravingActionResult>>;
+};
 
-/** The result for the onFinish function*/
-export interface EngravingOnFinishResult extends BaseResult {}
+/** The result for the onFinish function */
+export type EngravingOnFinishResult = Record<string, unknown> & BaseResult;
 
-/** The result for the run engraving function*/
-export interface RunEngravingResult {
-  /** A log transactionId that we could pass along (ex: AWS X-RAY) */
-  txId: string;
+/** The result for the run engraving function */
+export type RunEngravingResult = {
+	/** A log transactionId that we could pass along (ex: AWS X-RAY) */
+	txId: string;
 
-  /** the name of the engraving (the key in the record) */
-  engraving: string;
+	/** The name of the engraving (the key in the record) */
+	engraving: string;
 
-  /** A list of log messages */
-  messages: EngravingMessage[];
-}
+	/** A list of log messages */
+	messages: EngravingMessage[];
+};
 
 /** Type for a validation function */
 export type EngravingValidationFunction = (
-  value: EngravingValidationOpts
+	value: EngravingValidationOpts
 ) => Promise<Result<EngravingValidationSuccess, EngravingValidationError>>;
 
-/** Type for an action*/
+/** Type for an action */
 export type EngravingActionFunction = (
-  value: EngravingMask
+	value: EngravingMask
 ) => Promise<Result<EngravingActionResult, EngravingActionResult>>;
 
 /** Type for an onFinish Function */
 export type EngravingOnFinishFunction = (
-  value: EngravingOnFinishOpts
+	value: EngravingOnFinishOpts
 ) => Promise<Result<EngravingOnFinishResult, EngravingOnFinishResult>>;
 
 /** Type for a logger Function */
-export type EngravingLoggerFunction = (opts: EngravingLoggerOpts) => void;
+export type EngravingLoggerFunction = (options: EngravingLoggerOpts) => void;
 
 /** The companion tools (chisel) that are used alongside the model */
-export interface EngravingChisel {
-  /** The engraing model */
-  model: EngravingModel;
+export type EngravingChisel = {
+	/** The engraing model */
+	model: EngravingModel;
 
-  /** A mapping of actions */
-  actionFunctions: { [name: string]: EngravingActionFunction };
+	/** A mapping of actions */
+	actionFunctions: Record<string, EngravingActionFunction>;
 
-  /** A mapping of onFinish functions */
-  onFinishFunctions: { [name: string]: EngravingOnFinishFunction };
+	/** A mapping of onFinish functions */
+	onFinishFunctions: Record<string, EngravingOnFinishFunction>;
 
-  /** A mapping of validation functions */
-  validationFunctions: { [name: string]: EngravingValidationFunction };
+	/** A mapping of validation functions */
+	validationFunctions: Record<string, EngravingValidationFunction>;
 
-  /** A mapping of shield functions */
-  shieldFunctions: { [name: string]: EngravingValidationFunction };
+	/** A mapping of shield functions */
+	shieldFunctions: Record<string, EngravingValidationFunction>;
 
-  /** A mapping of logger functions */
-  loggerFunctions: { [name: string]: EngravingLoggerFunction };
-}
+	/** A mapping of logger functions */
+	loggerFunctions: Record<string, EngravingLoggerFunction>;
+};
