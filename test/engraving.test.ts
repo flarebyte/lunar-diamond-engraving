@@ -5,8 +5,8 @@ import { createFixtureChisel } from './fixture-helper.js';
 import { EngravingMask } from '../src/api-model.js';
 
 const emptyMask: EngravingMask = {
-  name: '',
-  txId: '',
+  name: 'contact-address',
+  txId: 'txId123',
   opts: {},
   headers: {},
   parameters: {},

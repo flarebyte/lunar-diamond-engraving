@@ -1,23 +1,28 @@
-import { EngravingMask, EngravingChisel } from './api-model.js';
+import { RunEngravingOpts, RunEngravingResult } from './api-model.js';
 import { getLogger } from './chisel-lookup.js';
 import { isFulfilled } from './guards.js';
 import { runValidation } from './run-validation.js';
 import { runAction } from './run-action.js';
 import { runOnFinish } from './run-on-finish.js';
 import { runShield } from './run-shield.js';
+import { Result } from './railway.js';
 
 /** Run the engraving with a mask (input) and a chisel (tooling) */
 export const runEngraving = async ({
   mask,
   chisel,
-}: {
-  mask: EngravingMask;
-  chisel: EngravingChisel;
-}) => {
+}: RunEngravingOpts): Promise<
+  Result<RunEngravingResult, RunEngravingResult>
+> => {
   const engraving = chisel.model.engravings[mask.name];
   if (engraving === undefined) {
     throw new Error(`${mask.name} is not available as an engraving (292272)`);
   }
+  const defaultEngravingResult: RunEngravingResult = {
+    txId: mask.txId,
+    engraving: mask.name,
+    messages: [],
+  };
   const logger = getLogger(chisel, engraving.logger);
 
   const { validation, shield, actions, onFinish } = engraving.phases;
@@ -35,7 +40,10 @@ export const runEngraving = async ({
       errors: validationResult.errors,
     });
     if (validationResult.exitOnFailure) {
-      return;
+      return {
+        status: 'failure',
+        error: { ...defaultEngravingResult, messages: ['Validation failed'] },
+      };
     }
   }
 
@@ -52,7 +60,10 @@ export const runEngraving = async ({
       errors: validationResult.errors,
     });
     if (shieldResult.exitOnFailure) {
-      return;
+      return {
+        status: 'failure',
+        error: { ...defaultEngravingResult, messages: ['Shield failed'] },
+      };
     }
   }
 
@@ -108,10 +119,21 @@ export const runEngraving = async ({
       engravingInput: mask,
       level: 'onFinish/success',
     });
+    return {
+      status: 'success',
+      value: { ...defaultEngravingResult },
+    };
   } else {
     await logger({
       engravingInput: mask,
       level: 'onFinish/error',
     });
+    return {
+      status: 'failure',
+      error: {
+        ...defaultEngravingResult,
+        messages: ['At least one action has failed'],
+      },
+    };
   }
 };

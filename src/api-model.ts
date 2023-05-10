@@ -74,6 +74,17 @@ export type EngravingLoggerOpts =
       engravingInput: EngravingMask;
     };
 
+/**
+ * Options for the run engraving function
+ */
+export interface RunEngravingOpts {
+  /**  The mask (or input) for the engraving process. In other words the incoming payload*/
+  mask: EngravingMask;
+
+  /** The tools (chisel) that are used alongside the model */
+  chisel: EngravingChisel;
+}
+
 /** Common fields for most results */
 interface BaseResult {
   /** A log transactionId that we could pass along (ex: AWS X-RAY) */
@@ -127,6 +138,18 @@ export interface EngravingOnFinishOpts {
 
 /** The result for the onFinish function*/
 export interface EngravingOnFinishResult extends BaseResult {}
+
+/** The result for the run engraving function*/
+export interface RunEngravingResult {
+  /** A log transactionId that we could pass along (ex: AWS X-RAY) */
+  txId: string;
+
+  /** the name of the engraving (the key in the record) */
+  engraving: string;
+
+  /** A list of log messages */
+  messages: string[];
+}
 
 /** Type for a validation function */
 export type EngravingValidationFunction = (
