@@ -1,5 +1,5 @@
-import {type EngravingModel} from './engraving-model.js';
-import {type Result} from './railway.js';
+import { type EngravingModel } from './engraving-model.js';
+import { type Result } from './railway.js';
 
 export type EngravingValidationTarget =
   | 'opts'
@@ -181,7 +181,9 @@ export type EngravingOnFinishFunction = (
 ) => Promise<Result<EngravingOnFinishResult, EngravingOnFinishResult>>;
 
 /** Type for a logger Function */
-export type EngravingLoggerFunction = (options: EngravingLoggerOpts) => void;
+export type EngravingLoggerFunction = (
+  options: EngravingLoggerOpts
+) => Promise<void>;
 
 /** The companion tools (chisel) that are used alongside the model */
 export type EngravingChisel = {
