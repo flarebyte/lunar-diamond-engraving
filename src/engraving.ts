@@ -2,7 +2,7 @@ import {type RunEngravingOpts, type RunEngravingResult} from './api-model.js';
 import {getLogger} from './chisel-lookup.js';
 import {isFulfilled} from './guards.js';
 import {runValidation} from './run-validation.js';
-import {runAction, runActionWithLogger} from './run-action.js';
+import {runActionWithLogger} from './run-action.js';
 import {runOnFinish} from './run-on-finish.js';
 import {runShield} from './run-shield.js';
 import {type Result} from './railway.js';
