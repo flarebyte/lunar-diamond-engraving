@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-floating-promises */
 import {describe, test} from 'node:test';
 import {strict as assert} from 'node:assert';
 import {type EngravingMask, runEngraving} from '../src/index.mjs';
