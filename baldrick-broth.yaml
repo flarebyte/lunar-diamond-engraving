@@ -15,7 +15,9 @@ model:
       - Reduce the complexity of the final solution by taking care of most of the business logic around error management
       - Could be the starting point for a document store
     links:
-      - "[SCHEMA](SCHEMA.md)"
+      - "[Schema](SCHEMA.md)"
+      - "[Usage](USAGE.md)"
+      - "[Npm dependencies](DEPENDENCIES.md)"
     related:
       - "[Command-query separation (CQS) principle ](https://en.wikipedia.org/wiki/Command%E2%80%93query_separation)"
     tags:
