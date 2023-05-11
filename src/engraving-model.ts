@@ -1,7 +1,7 @@
-import {z} from 'zod';
-import {stringy} from './field-validation.js';
-import {formatMessage, type ValidationError} from './format-message.js';
-import {type Result, succeed, willFail} from './railway.js';
+import { z } from 'zod';
+import { stringy } from './field-validation.js';
+import { formatMessage, type ValidationError } from './format-message.js';
+import { type Result, succeed, willFail } from './railway.js';
 
 const actionsSchema = z.object({
   title: stringy.title,
@@ -102,7 +102,7 @@ export const safeParseBuild = (content: unknown): EngravingModelValidation => {
   }
 
   const {
-    error: {issues},
+    error: { issues },
   } = result;
   const errors = issues.map(formatMessage);
   return willFail(errors);
@@ -111,8 +111,8 @@ export const safeParseBuild = (content: unknown): EngravingModelValidation => {
 export const getSchema = (_name: 'default') => schema;
 
 export const unsafeParse =
-  (config: Record<string, string>) => (_content: unknown) => {
-    const name = `${config['model']}`.trim();
+  (config: Record<'model', string>) => (_content: unknown) => {
+    const name = `${config.model}`.trim();
 
     return `${name} is not supported (979839)`;
   };

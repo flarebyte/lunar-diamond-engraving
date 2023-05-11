@@ -2,18 +2,19 @@ import {
   type EngravingMask,
   type EngravingChisel,
   type EngravingActionResult,
+  EngravingLoggerFunction,
 } from './api-model.js';
-import {type ActionModel} from './engraving-model.js';
-import {getUses} from './chisel-lookup.js';
-import {isActionError} from './guards.js';
-import {type Result, willFail} from './railway.js';
-import {orderOfMagnitude} from './utility.js';
-import {createActionError} from './create-error.js';
+import { type ActionModel } from './engraving-model.js';
+import { getUses } from './chisel-lookup.js';
+import { isActionError } from './guards.js';
+import { type Result, willFail } from './railway.js';
+import { orderOfMagnitude } from './utility.js';
+import { createActionError } from './create-error.js';
 
 /**
  * Run an action converting any exception to a failure result
  */
-export const runAction = async ({
+const runAction = async ({
   name,
   action,
   mask,
@@ -36,7 +37,7 @@ export const runAction = async ({
     }
 
     if (error instanceof Error) {
-      const {message} = error;
+      const { message } = error;
       return willFail(
         createActionError({
           name,
@@ -56,4 +57,40 @@ export const runAction = async ({
       })
     );
   }
+};
+
+export const runActionWithLogger = async ({
+  name,
+  action,
+  mask,
+  chisel,
+  logger,
+}: {
+  name: string;
+  action: ActionModel;
+  mask: EngravingMask;
+  chisel: EngravingChisel;
+  logger: EngravingLoggerFunction;
+}): Promise<Result<EngravingActionResult, EngravingActionResult>> => {
+  const actionResult = await runAction({
+    name,
+    action,
+    mask,
+    chisel,
+  });
+  if (actionResult.status === 'success') {
+    await logger({
+      engravingInput: mask,
+      level: 'action/success',
+      actionResult: actionResult.value,
+    });
+  } else {
+    await logger({
+      engravingInput: mask,
+      level: 'action/error',
+      actionResult: actionResult.error,
+    });
+  }
+
+  return actionResult;
 };

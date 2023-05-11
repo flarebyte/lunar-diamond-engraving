@@ -1,5 +1,5 @@
-import { type EngravingModel } from './engraving-model.js';
-import { type Result } from './railway.js';
+import {type EngravingModel} from './engraving-model.js';
+import {type Result} from './railway.js';
 
 export type EngravingValidationTarget =
   | 'opts'

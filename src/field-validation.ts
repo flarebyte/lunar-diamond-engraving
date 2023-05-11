@@ -87,13 +87,3 @@ export const stringy = {
   path: z.string().max(300).describe('A relative path to a file'),
   propPath: z.string().max(300).describe('A dot prop path'),
 };
-export const safeParseField = (
-  name: 'title' | 'filename' | string,
-  content: unknown
-) => {
-  if (name === 'title') {
-    return stringy.title.safeParse(content);
-  }
-
-  return `${name} is not supported`;
-};

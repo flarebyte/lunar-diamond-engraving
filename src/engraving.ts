@@ -1,12 +1,12 @@
-import {type RunEngravingOpts, type RunEngravingResult} from './api-model.js';
-import {getLogger} from './chisel-lookup.js';
-import {isFulfilled} from './guards.js';
-import {runValidation} from './run-validation.js';
-import {runAction} from './run-action.js';
-import {runOnFinish} from './run-on-finish.js';
-import {runShield} from './run-shield.js';
-import {type Result} from './railway.js';
-import {createEngravingMessage} from './create-message.js';
+import { type RunEngravingOpts, type RunEngravingResult } from './api-model.js';
+import { getLogger } from './chisel-lookup.js';
+import { isFulfilled } from './guards.js';
+import { runValidation } from './run-validation.js';
+import { runAction, runActionWithLogger } from './run-action.js';
+import { runOnFinish } from './run-on-finish.js';
+import { runShield } from './run-shield.js';
+import { type Result } from './railway.js';
+import { createEngravingMessage } from './create-message.js';
 
 /** Run the engraving with a mask (input) and a chisel (tooling) */
 export const runEngraving = async ({
@@ -27,7 +27,7 @@ export const runEngraving = async ({
   };
   const logger = getLogger(chisel, engraving.logger);
 
-  const {validation, shield, actions, onFinish} = engraving.phases;
+  const { validation, shield, actions, onFinish } = engraving.phases;
 
   const validationResult = await runValidation(validation, mask, chisel);
   if (validationResult.isSuccess) {
@@ -77,11 +77,12 @@ export const runEngraving = async ({
 
   /** Should we run all of these in parallel */
   const actionPromises = Object.entries(actions).map(async (actionKeyvalue) =>
-    runAction({
+    runActionWithLogger({
       name: actionKeyvalue[0],
       action: actionKeyvalue[1],
       mask,
       chisel,
+      logger,
     })
   );
 
@@ -101,22 +102,6 @@ export const runEngraving = async ({
     .filter(isFulfilled)
     .map((res) => res.value);
 
-  for (const actionResult of actionResults) {
-    if (actionResult.status === 'success') {
-      await logger({
-        engravingInput: mask,
-        level: 'action/success',
-        actionResult: actionResult.value,
-      });
-    } else {
-      await logger({
-        engravingInput: mask,
-        level: 'action/error',
-        actionResult: actionResult.error,
-      });
-    }
-  }
-
   const onFinishResult = await runOnFinish(
     onFinish,
     actionResults,
@@ -130,7 +115,7 @@ export const runEngraving = async ({
     });
     return {
       status: 'success',
-      value: {...defaultEngravingResult},
+      value: { ...defaultEngravingResult },
     };
   }
 
