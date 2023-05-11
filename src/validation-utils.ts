@@ -1,8 +1,8 @@
 import {
   type EngravingValidationSuccess,
-  type EngravingValidationError
+  type EngravingValidationError,
 } from './api-model.js';
-import { type Result } from './railway.js';
+import {type Result} from './railway.js';
 
 export function shouldValidationExitOnFailure(results: {
   opts: Result<EngravingValidationSuccess, EngravingValidationError>;
@@ -23,6 +23,7 @@ export function shouldValidationExitOnFailure(results: {
       results.context.error.exitOnFailure)
   );
 }
+
 export function isValidationError(results: {
   opts: Result<EngravingValidationSuccess, EngravingValidationError>;
   headers: Result<EngravingValidationSuccess, EngravingValidationError>;
@@ -32,12 +33,17 @@ export function isValidationError(results: {
 }) {
   return {
     opts: results.opts.status === 'failure' ? [results.opts.error] : [],
-    headers: results.headers.status === 'failure' ? [results.headers.error] : [],
-    parameters: results.parameters.status === 'failure' ? [results.parameters.error] : [],
-    payload: results.payload.status === 'failure' ? [results.payload.error] : [],
-    context: results.context.status === 'failure' ? [results.context.error] : [],
+    headers:
+      results.headers.status === 'failure' ? [results.headers.error] : [],
+    parameters:
+      results.parameters.status === 'failure' ? [results.parameters.error] : [],
+    payload:
+      results.payload.status === 'failure' ? [results.payload.error] : [],
+    context:
+      results.context.status === 'failure' ? [results.context.error] : [],
   };
 }
+
 export function isValidationSuccessful(results: {
   opts: Result<EngravingValidationSuccess, EngravingValidationError>;
   headers: Result<EngravingValidationSuccess, EngravingValidationError>;

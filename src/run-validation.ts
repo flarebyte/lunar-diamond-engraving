@@ -6,11 +6,15 @@ import {
   type EngravingValidationOpts,
   type EngravingValidationFunction,
 } from './api-model.js';
-import { createValidationError } from './create-error.js';
-import { type SingleEngravingModel } from './engraving-model.js';
-import { isValidationSuccessful, isValidationError, shouldValidationExitOnFailure } from './validation-utils.js';
-import { type Result, willFail } from './railway.js';
-import { orderOfMagnitude } from './utility.js';
+import {createValidationError} from './create-error.js';
+import {type SingleEngravingModel} from './engraving-model.js';
+import {
+  isValidationSuccessful,
+  isValidationError,
+  shouldValidationExitOnFailure,
+} from './validation-utils.js';
+import {type Result, willFail} from './railway.js';
+import {orderOfMagnitude} from './utility.js';
 
 const saferValidate = async (
   decorated: EngravingValidationFunction,
@@ -23,7 +27,7 @@ const saferValidate = async (
   } catch (error) {
     const finished = Date.now();
     if (error instanceof Error) {
-      const { message } = error;
+      const {message} = error;
       return willFail(
         createValidationError({
           target: value.target,
@@ -132,7 +136,5 @@ export const runValidation = async (
     ...error.payload,
     ...error.context,
   ];
-  return { isSuccess, exitOnFailure, ...results, errors };
+  return {isSuccess, exitOnFailure, ...results, errors};
 };
-
-

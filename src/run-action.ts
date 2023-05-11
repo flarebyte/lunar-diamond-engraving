@@ -2,14 +2,14 @@ import {
   type EngravingMask,
   type EngravingChisel,
   type EngravingActionResult,
-  EngravingLoggerFunction,
+  type EngravingLoggerFunction,
 } from './api-model.js';
-import { type ActionModel } from './engraving-model.js';
-import { getUses } from './chisel-lookup.js';
-import { isActionError } from './guards.js';
-import { type Result, willFail } from './railway.js';
-import { orderOfMagnitude } from './utility.js';
-import { createActionError } from './create-error.js';
+import {type ActionModel} from './engraving-model.js';
+import {getUses} from './chisel-lookup.js';
+import {isActionError} from './guards.js';
+import {type Result, willFail} from './railway.js';
+import {orderOfMagnitude} from './utility.js';
+import {createActionError} from './create-error.js';
 
 /**
  * Run an action converting any exception to a failure result
@@ -37,7 +37,7 @@ const runAction = async ({
     }
 
     if (error instanceof Error) {
-      const { message } = error;
+      const {message} = error;
       return willFail(
         createActionError({
           name,

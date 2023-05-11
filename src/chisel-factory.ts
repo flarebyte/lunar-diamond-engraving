@@ -5,8 +5,8 @@ import {
   type EngravingLoggerFunction,
   type EngravingValidationFunction,
 } from './api-model.js';
-import type { EngravingModel } from './engraving-model.js';
-import { safeParseBuild } from './engraving-model.js';
+import type {EngravingModel} from './engraving-model.js';
+import {safeParseBuild} from './engraving-model.js';
 /** List usage of the references to function */
 type EngravingReferenceCheck = {
   /** Unused references */

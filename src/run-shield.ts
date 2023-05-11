@@ -10,7 +10,11 @@ import {createValidationError} from './create-error.js';
 import {type SingleEngravingModel} from './engraving-model.js';
 import {type Result, willFail} from './railway.js';
 import {orderOfMagnitude} from './utility.js';
-import { isValidationError, isValidationSuccessful, shouldValidationExitOnFailure } from './validation-utils.js';
+import {
+  isValidationError,
+  isValidationSuccessful,
+  shouldValidationExitOnFailure,
+} from './validation-utils.js';
 
 const saferShield = async (
   decorated: EngravingValidationFunction,
