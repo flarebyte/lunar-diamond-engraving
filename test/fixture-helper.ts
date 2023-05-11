@@ -124,6 +124,7 @@ const shieldContactFail: EngravingValidationFunction = async (
 
 const contactLogger: EngravingLoggerFunction = async (
   _options: EngravingLoggerOpts
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
 ) => {};
 
 const contactWork: EngravingActionFunction = async (mask: EngravingMask) => {
