@@ -10,6 +10,7 @@ import {createValidationError} from './create-error.js';
 import {type SingleEngravingModel} from './engraving-model.js';
 import {type Result, willFail} from './railway.js';
 import {orderOfMagnitude} from './utility.js';
+import { isValidationError, isValidationSuccessful, shouldValidationExitOnFailure } from './validation-utils.js';
 
 const saferShield = async (
   decorated: EngravingValidationFunction,
@@ -118,23 +119,11 @@ export const runShield = async (
     }),
   };
 
-  const isSuccess =
-    results.opts.status === 'success' &&
-    results.headers.status === 'success' &&
-    results.parameters.status === 'success' &&
-    results.payload.status === 'success' &&
-    results.context.status === 'success';
-  const error = {
-    opts: results.opts.status === 'failure' ? [results.opts.error] : [],
-    headers:
-      results.headers.status === 'failure' ? [results.headers.error] : [],
-    parameters:
-      results.parameters.status === 'failure' ? [results.parameters.error] : [],
-    payload:
-      results.payload.status === 'failure' ? [results.payload.error] : [],
-    context:
-      results.context.status === 'failure' ? [results.context.error] : [],
-  };
+  const isSuccess = isValidationSuccessful(results);
+
+  const error = isValidationError(results);
+
+  const exitOnFailure = shouldValidationExitOnFailure(results);
   const errors = [
     ...error.opts,
     ...error.headers,
@@ -142,17 +131,6 @@ export const runShield = async (
     ...error.payload,
     ...error.context,
   ];
-
-  const exitOnFailure =
-    (results.opts.status === 'failure' && results.opts.error.exitOnFailure) ||
-    (results.headers.status === 'failure' &&
-      results.headers.error.exitOnFailure) ||
-    (results.parameters.status === 'failure' &&
-      results.parameters.error.exitOnFailure) ||
-    (results.payload.status === 'failure' &&
-      results.payload.error.exitOnFailure) ||
-    (results.context.status === 'failure' &&
-      results.context.error.exitOnFailure);
 
   return {isSuccess, exitOnFailure, ...results, errors};
 };

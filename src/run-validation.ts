@@ -6,10 +6,11 @@ import {
   type EngravingValidationOpts,
   type EngravingValidationFunction,
 } from './api-model.js';
-import {createValidationError} from './create-error.js';
-import {type SingleEngravingModel} from './engraving-model.js';
-import {type Result, willFail} from './railway.js';
-import {orderOfMagnitude} from './utility.js';
+import { createValidationError } from './create-error.js';
+import { type SingleEngravingModel } from './engraving-model.js';
+import { isValidationSuccessful, isValidationError, shouldValidationExitOnFailure } from './validation-utils.js';
+import { type Result, willFail } from './railway.js';
+import { orderOfMagnitude } from './utility.js';
 
 const saferValidate = async (
   decorated: EngravingValidationFunction,
@@ -22,7 +23,7 @@ const saferValidate = async (
   } catch (error) {
     const finished = Date.now();
     if (error instanceof Error) {
-      const {message} = error;
+      const { message } = error;
       return willFail(
         createValidationError({
           target: value.target,
@@ -118,35 +119,11 @@ export const runValidation = async (
     }),
   };
 
-  const isSuccess =
-    results.opts.status === 'success' &&
-    results.headers.status === 'success' &&
-    results.parameters.status === 'success' &&
-    results.payload.status === 'success' &&
-    results.context.status === 'success';
+  const isSuccess = isValidationSuccessful(results);
 
-  const error = {
-    opts: results.opts.status === 'failure' ? [results.opts.error] : [],
-    headers:
-      results.headers.status === 'failure' ? [results.headers.error] : [],
-    parameters:
-      results.parameters.status === 'failure' ? [results.parameters.error] : [],
-    payload:
-      results.payload.status === 'failure' ? [results.payload.error] : [],
-    context:
-      results.context.status === 'failure' ? [results.context.error] : [],
-  };
+  const error = isValidationError(results);
 
-  const exitOnFailure =
-    (results.opts.status === 'failure' && results.opts.error.exitOnFailure) ||
-    (results.headers.status === 'failure' &&
-      results.headers.error.exitOnFailure) ||
-    (results.parameters.status === 'failure' &&
-      results.parameters.error.exitOnFailure) ||
-    (results.payload.status === 'failure' &&
-      results.payload.error.exitOnFailure) ||
-    (results.context.status === 'failure' &&
-      results.context.error.exitOnFailure);
+  const exitOnFailure = shouldValidationExitOnFailure(results);
 
   const errors = [
     ...error.opts,
@@ -155,5 +132,7 @@ export const runValidation = async (
     ...error.payload,
     ...error.context,
   ];
-  return {isSuccess, exitOnFailure, ...results, errors};
+  return { isSuccess, exitOnFailure, ...results, errors };
 };
+
+
