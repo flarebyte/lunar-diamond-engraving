@@ -219,13 +219,19 @@ workflows:
               run: mkdir -p report
             - name: typedoc
               title: Generate typedoc doc.json
-              run: npx typedoc@latest --json report/doc.json --pretty src/index.ts
+              run: npx typedoc@latest --json report/doc.json --pretty src/index.mts
             - name: api
               title: Generate markdown files for the Api
               run: npx baldrick-doc-ts@latest typedoc --json-source report/doc.json
             - name: ngram
               title: Generate some markdown files with ngram
               run: npx baldrick-doc-ts@latest parse -f internal ngram
+            - name: functions-csv
+              title: Generate csv file with all the functions
+              run: npx baldrick-doc-ts@latest parse --feature functions-csv
+            - name: deps
+              title: Document the npm dependencies
+              run: npx zx https://raw.githubusercontent.com/flarebyte/baldrick-reserve/main/script/npm-dependencies.mjs
             - name: fix
               title: Fix all the markdown files
               run: npx baldrick-dev-ts@latest markdown fix
