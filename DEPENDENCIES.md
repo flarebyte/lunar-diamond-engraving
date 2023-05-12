@@ -17,6 +17,6 @@
 
 ## Peer dependencies
 
-| npm name | description                                                                           | registered |
-| -------- | ------------------------------------------------------------------------------------- | ---------- |
-| zod      | TypeScript-first schema declaration and validation library with static type inference | ❗ no       |
+| npm name | description                                                         | registered |
+| -------- | ------------------------------------------------------------------- | ---------- |
+| zod      | Zod is a TypeScript-first schema declaration and validation library | ✅ yes      |

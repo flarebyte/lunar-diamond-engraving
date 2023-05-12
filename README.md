@@ -40,7 +40,9 @@ Highlights:
 -   [Architectural Decision Records](DECISIONS.md)
 -   [Contributors](https://github.com/flarebyte/lunar-diamond-engraving/graphs/contributors)
 -   [Dependencies](https://github.com/flarebyte/lunar-diamond-engraving/network/dependencies)
--   [SCHEMA](SCHEMA.md)
+-   [Schema](SCHEMA.md)
+-   [Usage](USAGE.md)
+-   [Npm dependencies](DEPENDENCIES.md)
 
 ## Related
 

@@ -299,7 +299,8 @@ workflows:
     tasks:
       ready:
         title: Ready for publishing
-        description: Run a sequence of commands to check that the library is ready to be
+        description:
+          Run a sequence of commands to check that the library is ready to be
           published
         motivation: Detect quality flaws before pushing the code
         parameters:
@@ -637,3 +638,12 @@ workflows:
           commands:
             - title: Normalize using the custom script
               run: sh custom-scaffolding.sh
+      readme:
+        title: Update readme
+        description: Updates readme
+        main:
+          commands:
+            - title: Create README.md
+              run: npx baldrick-whisker@latest render baldrick-broth.yaml
+                github:flarebyte:baldrick-reserve:template/ts/readme.hbs
+                README.md
