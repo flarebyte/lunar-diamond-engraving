@@ -258,3 +258,20 @@ See also:
 **Run:** `npx baldrick-broth scaffold norm-package`
 
 ***
+
+### Normalize using the custom script
+
+> Normalize the project using a custom script for this project
+
+**Motivation:** Enable an imperative approach for some of normalisation to
+keep the model simple
+
+**Run:** `npx baldrick-broth scaffold custom`
+
+***
+
+### Update readme
+
+**Run:** `npx baldrick-broth scaffold readme`
+
+***
