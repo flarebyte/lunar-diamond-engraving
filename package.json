@@ -45,7 +45,7 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "@types/node": "^20.1.2",
+    "@types/node": "^20.1.3",
     "baldrick-zest-engine": "^0.9.0",
     "baldrick-zest-mess": "^0.17.0",
     "ts-node": "^10.9.1",
