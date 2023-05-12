@@ -1,0 +1,254 @@
+{
+  "$ref": "#/definitions/baldrick-pest-schema",
+  "definitions": {
+    "baldrick-pest-schema": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 60
+        },
+        "webpage": {
+          "type": "string",
+          "format": "uri",
+          "maxLength": 300,
+          "description": "A https link to a webpage"
+        },
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "maxLength": 300,
+          "description": "A https link to the item resource"
+        },
+        "engravings": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "title": {
+                "$ref": "#/definitions/baldrick-pest-schema/properties/title",
+                "description": "A concise title describing the domain"
+              },
+              "url": {
+                "$ref": "#/definitions/baldrick-pest-schema/properties/url",
+                "description": "A https link to the item resource"
+              },
+              "logger": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 60,
+                "pattern": "^logger\\:",
+                "description": "A unique key representing a logger"
+              },
+              "phases": {
+                "type": "object",
+                "properties": {
+                  "validation": {
+                    "type": "object",
+                    "properties": {
+                      "title": {
+                        "$ref": "#/definitions/baldrick-pest-schema/properties/title",
+                        "description": "What is been validated"
+                      },
+                      "keywords": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 150,
+                        "description": "A list of custom keywords that can be used as metatadata for documentation"
+                      },
+                      "check": {
+                        "type": "object",
+                        "properties": {
+                          "opts": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 60,
+                            "pattern": "^validation\\:",
+                            "description": "Id for validating the options passed to processing"
+                          },
+                          "headers": {
+                            "$ref": "#/definitions/baldrick-pest-schema/properties/engravings/additionalProperties/properties/phases/properties/validation/properties/check/properties/opts",
+                            "description": "Id for validating the HTTP headers"
+                          },
+                          "parameters": {
+                            "$ref": "#/definitions/baldrick-pest-schema/properties/engravings/additionalProperties/properties/phases/properties/validation/properties/check/properties/opts",
+                            "description": "Id for validating the query parameters"
+                          },
+                          "payload": {
+                            "$ref": "#/definitions/baldrick-pest-schema/properties/engravings/additionalProperties/properties/phases/properties/validation/properties/check/properties/opts",
+                            "description": "Id for validating the incoming payload"
+                          },
+                          "context": {
+                            "$ref": "#/definitions/baldrick-pest-schema/properties/engravings/additionalProperties/properties/phases/properties/validation/properties/check/properties/opts",
+                            "description": "iId for validating context"
+                          }
+                        },
+                        "required": [
+                          "opts",
+                          "headers",
+                          "parameters",
+                          "payload",
+                          "context"
+                        ],
+                        "additionalProperties": false,
+                        "description": "Main validation that must be satisfied"
+                      }
+                    },
+                    "required": [
+                      "title",
+                      "check"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "shield": {
+                    "type": "object",
+                    "properties": {
+                      "title": {
+                        "$ref": "#/definitions/baldrick-pest-schema/properties/title",
+                        "description": "What is been validated"
+                      },
+                      "keywords": {
+                        "$ref": "#/definitions/baldrick-pest-schema/properties/engravings/additionalProperties/properties/phases/properties/validation/properties/keywords",
+                        "description": "A list of custom keywords that can be used as metatadata for documentation"
+                      },
+                      "check": {
+                        "type": "object",
+                        "properties": {
+                          "opts": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 60,
+                            "pattern": "^shield\\:",
+                            "description": "Id for validating the options passed to processing"
+                          },
+                          "headers": {
+                            "$ref": "#/definitions/baldrick-pest-schema/properties/engravings/additionalProperties/properties/phases/properties/shield/properties/check/properties/opts",
+                            "description": "Id for validating the HTTP headers"
+                          },
+                          "parameters": {
+                            "$ref": "#/definitions/baldrick-pest-schema/properties/engravings/additionalProperties/properties/phases/properties/shield/properties/check/properties/opts",
+                            "description": "Id for validating the query parameters"
+                          },
+                          "payload": {
+                            "$ref": "#/definitions/baldrick-pest-schema/properties/engravings/additionalProperties/properties/phases/properties/shield/properties/check/properties/opts",
+                            "description": "Id for validating the incoming payload"
+                          },
+                          "context": {
+                            "$ref": "#/definitions/baldrick-pest-schema/properties/engravings/additionalProperties/properties/phases/properties/shield/properties/check/properties/opts",
+                            "description": "iId for validating context"
+                          }
+                        },
+                        "required": [
+                          "opts",
+                          "headers",
+                          "parameters",
+                          "payload",
+                          "context"
+                        ],
+                        "additionalProperties": false,
+                        "description": "Main validation that must be satisfied"
+                      }
+                    },
+                    "required": [
+                      "title",
+                      "check"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "actions": {
+                    "type": "object",
+                    "additionalProperties": {
+                      "type": "object",
+                      "properties": {
+                        "title": {
+                          "$ref": "#/definitions/baldrick-pest-schema/properties/title"
+                        },
+                        "keywords": {
+                          "$ref": "#/definitions/baldrick-pest-schema/properties/engravings/additionalProperties/properties/phases/properties/validation/properties/keywords",
+                          "description": "A list of custom keywords that can be used as metatadata for documentation"
+                        },
+                        "uses": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 60,
+                          "pattern": "^work\\:",
+                          "description": "A unique key representing a function"
+                        }
+                      },
+                      "required": [
+                        "title",
+                        "uses"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "propertyNames": {
+                      "minLength": 1,
+                      "maxLength": 60,
+                      "pattern": "[a-z][\\d_a-z]+"
+                    },
+                    "description": "A list of actions to run"
+                  },
+                  "onFinish": {
+                    "type": "object",
+                    "properties": {
+                      "title": {
+                        "$ref": "#/definitions/baldrick-pest-schema/properties/title"
+                      },
+                      "keywords": {
+                        "$ref": "#/definitions/baldrick-pest-schema/properties/engravings/additionalProperties/properties/phases/properties/validation/properties/keywords",
+                        "description": "A list of custom keywords that can be used as metatadata for documentation"
+                      },
+                      "uses": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 60,
+                        "pattern": "^finish\\:",
+                        "description": "A unique key representing a finish function"
+                      }
+                    },
+                    "required": [
+                      "title",
+                      "uses"
+                    ],
+                    "additionalProperties": false,
+                    "description": "The final action that will be called when all other actions will have finished"
+                  }
+                },
+                "required": [
+                  "validation",
+                  "shield",
+                  "actions",
+                  "onFinish"
+                ],
+                "additionalProperties": false,
+                "description": "The different phases of engraving the domain"
+              }
+            },
+            "required": [
+              "title",
+              "logger",
+              "phases"
+            ],
+            "additionalProperties": false,
+            "description": "Domain for engraving (ex: student)"
+          },
+          "propertyNames": {
+            "minLength": 1,
+            "maxLength": 60,
+            "pattern": "[a-z][\\d_a-z]+"
+          },
+          "description": "List of domain for engraving"
+        }
+      },
+      "required": [
+        "title",
+        "webpage",
+        "engravings"
+      ],
+      "additionalProperties": false,
+      "description": "Settings for a lunar-diamond-engraving file"
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}

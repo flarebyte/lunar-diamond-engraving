@@ -1,0 +1,99 @@
+---
+title: Lunar diamond engraving event store
+description: |
+  Facilitate the writing of records in a cloud event store
+technologies:
+  - AWS cloud services
+  - Typescript
+  - Pure functional programming
+lifelines:
+  dispatcher:
+    title: Payload dispatcher
+    description: |
+      The compute service will route the payloads to the correct destinations
+    technologies:
+      - AWS Lambda
+      - AWS Event Bridge
+      - AWS SNS
+    mustHave:
+      - Validate payload with a schema (Zod)
+      - validate destinations for payload
+      - Verify that the user is allow to perform the action on the payload
+      - Support any MIME document for a given domain such as HTML, CSS, images
+      - Media and images may be provivided with possibly several formats and sizes
+    niceToHave:
+      - An optional virus scanner service may be used.
+      - Some automatic conversion could be performed from Markdown to HTML, svg to png, and so on.
+      - Conversion should be possible between different format (JSON, JSON5, YAML).
+  latest-storage:
+    title: Latest storage
+    description: |
+      Storage where the latest document is stored
+      - JSON documents can be used as database records.
+      - MIME documents (.html, .css, .jpg) can be used as assets for displaying pictures of product for example.
+    technologies:
+      - AWS S3 with object lock.
+      - AWS Dynamo DB
+      - Encryption
+    mustHave:
+      - The data should only be kept for a period of time (ex 3 years)
+      - Sensitive data should be stored with right level of care.
+  historical-storage:
+    title: Historical storage
+    description: |
+      Storage where historical data is been stored
+    technologies:
+      - AWS S3
+      - AWS S3 Glacier
+      - Encryption
+  audit-journal:
+    title: Audit journal
+    description: |
+      Describe who access which payload when
+    technologies:
+      - AWS S3 with object lock.
+      - AWS Dynamo DB
+      - Encryption
+  rejection-journal:
+    title: Rejection journal
+    description: |
+      Describe all the rejections because either:
+       - the data is invalid 
+       - the access is forbidden
+    technologies:
+      - AWS S3 with object lock.
+      - AWS Dynamo DB
+  search-record:
+    title: A contenation of fields used for search purpose
+    description: |
+      Keep only the records that should be used for search
+    technologies:
+      - AWS S3.
+      - AWS Dynamo DB
+      - Amazon CloudSearch
+      - Amazon Elasticsearch Service
+      - Amazon OpenSearch Service
+messages:
+  - from: dispatcher
+    to: latest-storage
+    title: store latest
+    description: |
+      Store the most recent data
+  - from: dispatcher
+    to: historical-storage
+    title: Keeps historical records
+    description: |
+      Keeps the historical records so the history can be consulted
+  - from: dispatcher
+    to: rejection-journal
+    title: Keep a journal of invalid access
+    description: Keep a journal of invalid access because the request was invalid
+  - from: dispatcher
+    to: audit-journal
+    title: Keep a journal of valid access
+    description: Keep a journal of valid access
+  - from: dispatcher
+    to: search-record
+    title: Keep the metadata useful for searching the records
+    description: Keep the metadata useful for searching the records
+    
